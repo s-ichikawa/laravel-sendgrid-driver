@@ -27,6 +27,7 @@ class SendgridTransport extends Transport
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
         list($from, $fromName) = $this->getFromAddresses($message);
+        $payload = $this->options;
 
         $data = [
             'from'     => $from,
@@ -40,12 +41,12 @@ class SendgridTransport extends Transport
         $this->setAttachment($data, $message);
 
         if (version_compare(ClientInterface::VERSION, '6') === 1) {
-            $this->options += ['form_params' => $data];
+            $payload += ['form_params' => $data];
         } else {
-            $this->options += ['body' => $data];
+            $payload += ['body' => $data];
         }
 
-        return $this->client->post('https://api.sendgrid.com/api/mail.send.json', $this->options);
+        return $this->client->post('https://api.sendgrid.com/api/mail.send.json', $payload);
     }
 
     /**
@@ -56,7 +57,7 @@ class SendgridTransport extends Transport
     {
         if ($from = $message->getTo()) {
             $data['to'] = array_keys($from);
-            $data['toname'] = $from;
+            $data['toname'] = array_values($from);
         }
     }
 
@@ -68,7 +69,7 @@ class SendgridTransport extends Transport
     {
         if ($cc = $message->getCc()) {
             $data['cc'] = array_keys($cc);
-            $data['ccname'] = $cc;
+            $data['ccname'] = array_values($cc);
         }
     }
 
@@ -80,7 +81,7 @@ class SendgridTransport extends Transport
     {
         if ($bcc = $message->getBcc()) {
             $data['bcc'] = array_keys($bcc);
-            $data['bccname'] = $bcc;
+            $data['bccname'] = array_values($bcc);
         }
     }
 

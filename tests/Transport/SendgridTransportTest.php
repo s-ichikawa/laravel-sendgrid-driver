@@ -28,6 +28,23 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
     }
 
+    public function testMultipleSend()
+    {
+        $message = new Message($this->getMessage());
+        $message->from('from@example.com', 'test_from')
+            ->to('foo@example.com', 'foo');
+        $res = $this->transport->send($message->getSwiftMessage());
+
+        $this->assertEquals(200, $res->getStatusCode());
+
+        $message = new Message($this->getMessage());
+        $message->from('from@example.com', 'test_from')
+            ->to('bar@example.com', 'bar');
+        $res = $this->transport->send($message->getSwiftMessage());
+
+        $this->assertEquals(200, $res->getStatusCode());
+    }
+
     public function testSetTo()
     {
         $to = 'test@exsample.com';
