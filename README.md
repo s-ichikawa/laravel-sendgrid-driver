@@ -1,13 +1,11 @@
 Laravel SendGrid Driver
 ====
 
-このパッケージはLaravelにSendGrid WebAPIでメールを送信するためのAPIドライバーを追加できます。
-インストールと設定を行うだけですぐに使いはじめる事ができます。
+A Mail Driver with support for Sendgrid Web API, using the original Laravel API.
+This library extends the original Laravel classes, so it uses exactly the same methods.
 
-
-※このパッケージを使用するためには[SendGridのAPI KEY](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html)が必要となります。
-下記URLよりご自身の発行をしてください。
-https://app.sendgrid.com/settings/api_keys
+To use this package required your [Sendgrid Api Key](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html).
+Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
 #Install (Laravel5.1~)
 
