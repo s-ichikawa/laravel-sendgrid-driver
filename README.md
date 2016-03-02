@@ -1,6 +1,8 @@
 Laravel SendGrid Driver
 ====
 
+[![Build Status](https://scrutinizer-ci.com/g/s-ichikawa/laravel-sendgrid-driver/badges/build.png?b=master)](https://scrutinizer-ci.com/g/s-ichikawa/laravel-sendgrid-driver/build-status/master)
+
 A Mail Driver with support for Sendgrid Web API, using the original Laravel API.
 This library extends the original Laravel classes, so it uses exactly the same methods.
 
