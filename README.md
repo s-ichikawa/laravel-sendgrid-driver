@@ -70,3 +70,22 @@ config/service.php
     ]
 ```
 
+#Use SMTP API
+
+Sendgrid's [SMTP API](https://sendgrid.com/docs/API_Reference/SMTP_API/index.html) is so cool feature.
+This function can use by setting embed data to message.
+and, set 'sendgrid/x-smtpapi' to data name or content-type.
+
+```
+\Mail::send('view', $data, function (Message $message) {
+    $message
+        ->to('foo@example.com', 'foo_name')
+        ->from('bar@example.com', 'bar_name')
+        ->embedData([
+            'category' => 'user_group1',
+            'unique_args' => [
+                'user_id' => 123
+            ]
+        ], 'sendgrid/x-smtpapi');
+});
+```

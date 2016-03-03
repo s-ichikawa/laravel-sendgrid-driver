@@ -4,11 +4,13 @@ namespace Sichikawa\LaravelSendgridDriver\Transport;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Mail\Transport\Transport;
 use Swift_Attachment;
+use Swift_Image;
 use Swift_Mime_Message;
 
 class SendgridTransport extends Transport
 {
     const MAXIMUM_FILE_SIZE = 7340032;
+    const SMTP_API_NAME = 'sendgrid/x-smtpapi';
 
     private $client;
     private $options;
@@ -39,6 +41,7 @@ class SendgridTransport extends Transport
         $this->setCc($data, $message);
         $this->setBcc($data, $message);
         $this->setAttachment($data, $message);
+        $this->setSmtpApi($data, $message);
 
         if (version_compare(ClientInterface::VERSION, '6') === 1) {
             $payload += ['form_params' => $data];
@@ -116,6 +119,24 @@ class SendgridTransport extends Transport
             $handler = tmpfile();
             fwrite($handler, $attachment->getBody());
             $data['files[' . $attachment->getFilename() . ']'] = $handler;
+        }
+    }
+
+    /**
+     * Set Sendgrid SMTP API
+     *
+     * @param $data
+     * @param Swift_Mime_Message $message
+     */
+    protected function setSmtpApi(&$data, Swift_Mime_Message $message)
+    {
+        foreach ($message->getChildren() as $attachment) {
+            if (!$attachment instanceof Swift_Image
+                || !in_array(self::SMTP_API_NAME, [$attachment->getFilename(), $attachment->getContentType()])
+            ) {
+                continue;
+            }
+            $data['x-smtpapi'] = json_encode($attachment->getBody());
         }
     }
 }
