@@ -102,6 +102,20 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals('stream', get_resource_type($data['files[test.png]']));
     }
 
+    public function testSetSmtpApi()
+    {
+        $setSmtpApi = \Closure::bind(function (&$data, $message) {
+            return $this->setSmtpApi($data, $message);
+        }, $this->transport, 'Sichikawa\LaravelSendgridDriver\Transport\SendGridTransport');
+        $data = [];
+        $message = new Message($this->getMessage());
+        $message->embedData([
+            'category' => 'foo'
+        ], 'sendgrid/x-smtpapi');
+        $setSmtpApi($data, $message->getSwiftMessage());
+        $this->assertEquals(json_encode(['category' => 'foo']), $data['x-smtpapi']);
+    }
+
     public function testGetFromAddresses()
     {
         $from = 'test@exsample.com';
