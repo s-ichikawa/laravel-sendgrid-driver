@@ -90,6 +90,22 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals($bcc_name, array_pop($data['bccname']));
     }
 
+    public function testSetText()
+    {
+        $setText = \Closure::bind(function (&$data, $message) {
+            return $this->setText($data, $message);
+        }, $this->transport, 'Sichikawa\LaravelSendgridDriver\Transport\SendGridTransport');
+
+        $data = [];
+        $message = new Message($this->getMessage());
+        $message->getSwiftMessage()->setChildren([Swift_MimePart::newInstance(
+            'This is a test.'
+        )]);
+        $setText($data, $message->getSwiftMessage());
+
+        $this->assertEquals('This is a test.', $data['text']);
+    }
+
     public function testSetAttachment()
     {
         $setAttachment = \Closure::bind(function (&$data, $message) {
