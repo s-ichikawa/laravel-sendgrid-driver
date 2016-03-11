@@ -6,6 +6,7 @@ use Illuminate\Mail\Transport\Transport;
 use Swift_Attachment;
 use Swift_Image;
 use Swift_Mime_Message;
+use Swift_MimePart;
 
 class SendgridTransport extends Transport
 {
@@ -40,6 +41,7 @@ class SendgridTransport extends Transport
         $this->setTo($data, $message);
         $this->setCc($data, $message);
         $this->setBcc($data, $message);
+        $this->setText($data, $message);
         $this->setAttachment($data, $message);
         $this->setSmtpApi($data, $message);
 
@@ -102,6 +104,22 @@ class SendgridTransport extends Transport
             }
         }
         return [];
+    }
+
+    /**
+     * Set text contents.
+     *
+     * @param $data
+     * @param Swift_Mime_Message $message
+     */
+    protected function setText(&$data, Swift_Mime_Message $message)
+    {
+        foreach ($message->getChildren() as $attachment) {
+            if (!$attachment instanceof Swift_MimePart) {
+                continue;
+            }
+            $data['text'] = $attachment->getBody();
+        }
     }
 
     /**
