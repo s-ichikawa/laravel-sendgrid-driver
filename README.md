@@ -24,7 +24,7 @@ or installed with composer
 $ composer require s-ichikawa/laravel-sendgrid-driver:dev-master
 ```
 
-Remove the default service provider and add the sendgrid service provider in app/config/app.php:
+Remove the default service provider and add the sendgrid service provider in config/app.php:
 ```php
 'providers' => [
 //  Illuminate\Mail\MailServiceProvider::class,
@@ -47,13 +47,37 @@ or installed with composer
 $ composer require s-ichikawa/laravel-sendgrid-driver:5.0.x-dev
 ```
 
-Remove the default service provider and add the sendgrid service provider in app/config/app.php:
+Remove the default service provider and add the sendgrid service provider in config/app.php:
 ```php
 'providers' => [
 //  'Illuminate\Mail\MailServiceProvider',
 
     'Sichikawa\LaravelSendgridDriver\MailServiceProvider',
 ];
+```
+
+# Install (Lumen)
+
+Add the package to your composer.json and run composer update.
+```json
+"require": {
+    "s-ichikawa/laravel-sendgrid-driver": "dev-master"
+},
+```
+
+or installed with composer
+```
+$ composer require s-ichikawa/laravel-sendgrid-driver:dev-master
+```
+
+Add the sendgrid service provider in bootstrap/app.php
+```php
+$app->configure('mail');
+$app->configure('services');
+$app->register(Sichikawa\LaravelSendgridDriver\MailServiceProvider::class);
+
+// If on Lumen5.1
+unset($app->availableBindings['mailer']);
 ```
 
 #Configure
