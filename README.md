@@ -76,7 +76,6 @@ $app->configure('mail');
 $app->configure('services');
 $app->register(Sichikawa\LaravelSendgridDriver\MailServiceProvider::class);
 
-// If on Lumen5.1
 unset($app->availableBindings['mailer']);
 ```
 
