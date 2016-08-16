@@ -4,7 +4,7 @@
     "license": "MIT",
     "require": {
         "illuminate/mail": "~5.1",
-        "guzzlehttp/guzzle": ">=5.1"
+        "guzzlehttp/guzzle": "~6.2.1"
     },
     "require-dev": {
         "illuminate/container": "~5.1.0",
