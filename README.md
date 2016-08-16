@@ -10,18 +10,22 @@ This library extends the original Laravel classes, so it uses exactly the same m
 To use this package required your [Sendgrid Api Key](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html).
 Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
+#Caution!
+
+This version has [security issues](https://github.com/guzzle/guzzle/releases/tag/6.2.1), if your project using guzzlehttp/guzzle 6.2.0.
+
 #Install (Laravel5.1~)
 
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "dev-master"
+    "s-ichikawa/laravel-sendgrid-driver": 1.0.0
 },
 ```
 
 or installed with composer
 ```
-$ composer require s-ichikawa/laravel-sendgrid-driver:dev-master
+$ composer require s-ichikawa/laravel-sendgrid-driver:1.0.0
 ```
 
 Remove the default service provider and add the sendgrid service provider in config/app.php:
