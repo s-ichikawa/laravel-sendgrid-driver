@@ -13,141 +13,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $filesystem = new \Illuminate\Filesystem\Filesystem;
         $services = $filesystem->getRequire(__DIR__ . '/config/services.php');
         $this->api_key = $services['sendgrid']['api_key'];
-        $app = new MockApplication(__DIR__);
+        $app = $this->getMockForAbstractClass(\Illuminate\Container\Container::class);
         $app['config'] = new MockConfig();
         $this->transportManager = new TransportManager($app);
         $this->transportManager->setDefaultDriver('sendgrid');
-    }
-}
-
-class MockApplication extends \Illuminate\Container\Container implements Illuminate\Contracts\Foundation\Application
-{
-    /**
-     * Get the version number of the application.
-     *
-     * @return string
-     */
-    public function version()
-    {
-        // TODO: Implement version() method.
-    }
-
-    /**
-     * Get the base path of the Laravel installation.
-     *
-     * @return string
-     */
-    public function basePath()
-    {
-        // TODO: Implement basePath() method.
-    }
-
-    /**
-     * Get or check the current application environment.
-     *
-     * @param  mixed
-     * @return string
-     */
-    public function environment()
-    {
-        // TODO: Implement environment() method.
-    }
-
-    /**
-     * Determine if the application is currently down for maintenance.
-     *
-     * @return bool
-     */
-    public function isDownForMaintenance()
-    {
-        // TODO: Implement isDownForMaintenance() method.
-    }
-
-    /**
-     * Register all of the configured providers.
-     *
-     * @return void
-     */
-    public function registerConfiguredProviders()
-    {
-        // TODO: Implement registerConfiguredProviders() method.
-    }
-
-    /**
-     * Register a service provider with the application.
-     *
-     * @param  \Illuminate\Support\ServiceProvider|string $provider
-     * @param  array $options
-     * @param  bool $force
-     * @return \Illuminate\Support\ServiceProvider
-     */
-    public function register($provider, $options = array(), $force = false)
-    {
-        // TODO: Implement register() method.
-    }
-
-    /**
-     * Register a deferred provider and service.
-     *
-     * @param  string $provider
-     * @param  string $service
-     * @return void
-     */
-    public function registerDeferredProvider($provider, $service = null)
-    {
-        // TODO: Implement registerDeferredProvider() method.
-    }
-
-    /**
-     * Boot the application's service providers.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        // TODO: Implement boot() method.
-    }
-
-    /**
-     * Register a new boot listener.
-     *
-     * @param  mixed $callback
-     * @return void
-     */
-    public function booting($callback)
-    {
-        // TODO: Implement booting() method.
-    }
-
-    /**
-     * Register a new "booted" listener.
-     *
-     * @param  mixed $callback
-     * @return void
-     */
-    public function booted($callback)
-    {
-        // TODO: Implement booted() method.
-    }
-
-    /**
-     * Get the path to the cached "compiled.php" file.
-     *
-     * @return string
-     */
-    public function getCachedCompilePath()
-    {
-        // TODO: Implement getCachedCompilePath() method.
-    }
-
-    /**
-     * Get the path to the cached services.json file.
-     *
-     * @return string
-     */
-    public function getCachedServicesPath()
-    {
-        // TODO: Implement getCachedServicesPath() method.
     }
 }
 
@@ -162,7 +31,7 @@ class MockConfig implements ArrayAccess, Illuminate\Contracts\Config\Repository
     {
         $filesystem = new \Illuminate\Filesystem\Filesystem;
         $services = $filesystem->getRequire(__DIR__ . '/config/services.php');
-        $this->item['services.sendgrid'] = $services['sendgrid'];
+        array_set($this->item, 'services.sendgrid', $services['sendgrid']);
     }
 
     /**
@@ -197,7 +66,7 @@ class MockConfig implements ArrayAccess, Illuminate\Contracts\Config\Repository
      */
     public function set($key, $value = null)
     {
-        // TODO: Implement set() method.
+        array_set($this->item, $key, $value);
     }
 
     /**
@@ -293,6 +162,6 @@ class MockConfig implements ArrayAccess, Illuminate\Contracts\Config\Repository
      */
     public function all()
     {
-        // TODO: Implement all() method.
+        return $this->item;
     }
 }
