@@ -86,9 +86,24 @@ unset($app->availableBindings['mailer']);
 
 #Configure
 
-.env
+.env (use Web API v2)
 ```
 MAIL_DRIVER=sendgrid
+SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
+```
+
+config/service.php
+```
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY')
+    ]
+```
+
+or
+
+.env (use Web API v3)
+```
+MAIL_DRIVER=sendgridv3
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
