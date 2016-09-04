@@ -23,17 +23,4 @@ class TransportManager extends \Illuminate\Mail\TransportManager
         }
         return new SendgridTransport($client, $config['api_key']);
     }
-
-    /**
-     * Create an instance of the SendGrid Swift Transport driver.
-     *
-     * @return Transport\SendgridV3Transport
-     */
-    protected function createSendgridV3Driver()
-    {
-        $config = $this->app['config']->get('services.sendgrid', []);
-        $client = new HttpClient(Arr::get($config, 'guzzle', []));
-        $pretend = isset($config['pretend']) ? $config['pretend'] : false;
-        return new SendgridV3Transport($client, $config['api_key'], $pretend);
-    }
 }
