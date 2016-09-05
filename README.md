@@ -103,7 +103,7 @@ or
 
 .env (use Web API v3)
 ```
-MAIL_DRIVER=sendgridv3
+MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
