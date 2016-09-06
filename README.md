@@ -20,7 +20,7 @@ But the old version has [security issues](https://github.com/guzzle/guzzle/relea
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": ~1.1
+    "s-ichikawa/laravel-sendgrid-driver": "^1.1"
 },
 ```
 
@@ -66,13 +66,13 @@ Remove the default service provider and add the sendgrid service provider in con
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "dev-master"
+    "s-ichikawa/laravel-sendgrid-driver": "^1.1"
 },
 ```
 
 or installed with composer
 ```
-$ composer require s-ichikawa/laravel-sendgrid-driver:dev-master
+$ composer require s-ichikawa/laravel-sendgrid-driver
 ```
 
 Add the sendgrid service provider in bootstrap/app.php
@@ -84,24 +84,11 @@ $app->register(Sichikawa\LaravelSendgridDriver\MailServiceProvider::class);
 unset($app->availableBindings['mailer']);
 ```
 
-#Configure
+#API v3
 
-.env (use Web API v2)
-```
-MAIL_DRIVER=sendgrid
-SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
-```
+##Configure
 
-config/service.php
-```
-    'sendgrid' => [
-        'api_key' => env('SENDGRID_API_KEY')
-    ]
-```
-
-or
-
-.env (use Web API v3)
+.env
 ```
 MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
@@ -112,6 +99,43 @@ config/service.php
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY'),
         'version' => 'v3'
+    ]
+```
+
+##Request Body Parameters
+
+Every request made to /v3/mail/send will require a request body formatted in JSON containing your email’s content and metadata.
+Required parameters are set by Laravel's usually mail sending, but you can also use useful features like "categories" and "send_at".
+
+```
+\Mail::send('view', $data, function (Message $message) {
+    $message
+        ->to('foo@example.com', 'foo_name')
+        ->from('bar@example.com', 'bar_name')
+        ->embedData([
+            'categories' => ['user_group1'],
+            'send_at' => $send_at->getTimestamp(),
+        ], 'sendgrid/x-smtpapi');
+});
+```
+
+more info
+https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
+
+#API v2
+
+##Configure
+
+.env
+```
+MAIL_DRIVER=sendgrid
+SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
+```
+
+config/service.php
+```
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY')
     ]
 ```
 
@@ -134,3 +158,4 @@ and, set 'sendgrid/x-smtpapi' to data name or content-type.
         ], 'sendgrid/x-smtpapi');
 });
 ```
+
