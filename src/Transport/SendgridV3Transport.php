@@ -49,7 +49,7 @@ class SendgridV3Transport extends Transport
             $data['attachments'] = $attachments;
         }
 
-        $data = $this->setSmtpApi($message, $data);
+        $data = $this->setParameters($message, $data);
 
         $payload['json'] = $data;
 
@@ -158,13 +158,13 @@ class SendgridV3Transport extends Transport
     }
 
     /**
-     * Set Sendgrid SMTP API
+     * Set Request Body Parameters
      *
      * @param Swift_Mime_Message $message
      * @param array $data
      * @return null|string
      */
-    protected function setSmtpApi(Swift_Mime_Message $message, $data)
+    protected function setParameters(Swift_Mime_Message $message, $data)
     {
         $smtp_api = [];
         foreach ($message->getChildren() as $attachment) {
