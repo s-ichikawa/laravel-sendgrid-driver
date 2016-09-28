@@ -22,8 +22,8 @@ class SendgridTransportTest extends TestCase
     public function testSend()
     {
         $message = new Message($this->getMessage());
-        $message->from('from@example.com', 'test_from')
-            ->to('to@example.com', 'test_to');
+        $message->from('from@sink.sendgrid.net', 'test_from')
+            ->to('to@sink.sendgrid.net', 'test_to');
         $res = $this->transport->send($message->getSwiftMessage());
         $this->assertEquals(200, $res->getStatusCode());
     }
@@ -31,15 +31,15 @@ class SendgridTransportTest extends TestCase
     public function testMultipleSend()
     {
         $message = new Message($this->getMessage());
-        $message->from('from@example.com', 'test_from')
-            ->to('foo@example.com', 'foo');
+        $message->from('from@sink.sendgrid.net', 'test_from')
+            ->to('foo@sink.sendgrid.net', 'foo');
         $res = $this->transport->send($message->getSwiftMessage());
 
         $this->assertEquals(200, $res->getStatusCode());
 
         $message = new Message($this->getMessage());
-        $message->from('from@example.com', 'test_from')
-            ->to('bar@example.com', 'bar');
+        $message->from('from@sink.sendgrid.net', 'test_from')
+            ->to('bar@sink.sendgrid.net', 'bar');
         $res = $this->transport->send($message->getSwiftMessage());
 
         $this->assertEquals(200, $res->getStatusCode());
