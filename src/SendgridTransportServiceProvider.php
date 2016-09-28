@@ -17,7 +17,9 @@ class SendgridTransportServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->afterResolving(TransportManager::class, [$this, 'extendTransportManager']);
+        $this->app->afterResolving(TransportManager::class, function(TransportManager $manager) {
+            $this->extendTransportManager($manager);
+        });
     }
 
     public function extendTransportManager(TransportManager $manager)
