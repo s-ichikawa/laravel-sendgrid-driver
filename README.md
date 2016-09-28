@@ -29,12 +29,10 @@ or installed with composer
 $ composer require s-ichikawa/laravel-sendgrid-driver
 ```
 
-Remove the default service provider and add the sendgrid service provider in config/app.php:
+Add the sendgrid service provider in config/app.php:
 ```php
 'providers' => [
-//  Illuminate\Mail\MailServiceProvider::class,
-
-    Sichikawa\LaravelSendgridDriver\MailServiceProvider::class,
+    Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
 ];
 ```
 
