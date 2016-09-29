@@ -3,15 +3,10 @@ namespace Sichikawa\LaravelSendgridDriver;
 
 class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider
 {
-    /**
-     * Register the Swift Transport instance.
-     *
-     * @return void
-     */
-    protected function registerSwiftTransport()
+    public function register()
     {
-        $this->app['swift.transport'] = $this->app->share(function ($app) {
-            return new TransportManager($app);
-        });
+        parent::register();
+
+        $this->app->register(SendgridTransportServiceProvider::class);
     }
 }

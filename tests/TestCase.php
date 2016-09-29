@@ -1,10 +1,13 @@
 <?php
 
-use Sichikawa\LaravelSendgridDriver\TransportManager;
+use Illuminate\Mail\TransportManager;
+use Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $transportManager;
+    /**
+     * @var string
+     */
     protected $api_key;
 
     protected function setUp()
@@ -13,10 +16,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $filesystem = new \Illuminate\Filesystem\Filesystem;
         $services = $filesystem->getRequire(__DIR__ . '/config/services.php');
         $this->api_key = $services['sendgrid']['api_key'];
-        $app = $this->getMockForAbstractClass(\Illuminate\Container\Container::class);
-        $app['config'] = new MockConfig();
-        $this->transportManager = new TransportManager($app);
-        $this->transportManager->setDefaultDriver('sendgrid');
     }
 }
 
