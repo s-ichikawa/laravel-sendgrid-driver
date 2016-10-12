@@ -162,7 +162,7 @@ class SendgridV3Transport extends Transport
      *
      * @param Swift_Mime_Message $message
      * @param array $data
-     * @return null|string
+     * @return array
      */
     protected function setParameters(Swift_Mime_Message $message, $data)
     {
