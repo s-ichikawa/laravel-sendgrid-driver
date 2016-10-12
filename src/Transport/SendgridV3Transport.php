@@ -181,9 +181,21 @@ class SendgridV3Transport extends Transport
         }
 
         foreach ($smtp_api as $key => $val) {
+            if ($key === 'personalizations') {
+                $this->setPersonalizations($data, $val);
+                continue;
+            }
             array_set($data, $key, $val);
         }
         return $data;
     }
 
+    private function setPersonalizations(&$data, $personalizations)
+    {
+        foreach ($personalizations as $params) {
+            foreach ($params as $key => $val) {
+                array_set($data, 'personalizations.0.' . $key, $val);
+            }
+        }
+    }
 }

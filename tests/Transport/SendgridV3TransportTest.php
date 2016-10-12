@@ -111,9 +111,47 @@ class SendgridV3TransportTest extends TestCase
         $this->assertEquals('test.png', array_get($res, '0.filename'));
     }
 
-    public function testSetSmtpApi()
+    public function testSetParameters()
     {
-       // TODO
+        $setParameters = \Closure::bind(function ($message, $data) {
+            return $this->setParameters($message, $data);
+        }, $this->transport, SendgridV3Transport::class);
+
+        $parameters = [
+            'categories' => 'category1'
+        ];
+        $message = new Message($this->getMessage());
+        $message->embedData($parameters, 'sendgrid/x-smtpapi');
+        $data = [];
+        $data = $setParameters($message->getSwiftMessage(), $data);
+        $this->assertEquals($parameters, $data);
+    }
+
+    public function testSetPersonalizations()
+    {
+        $setParameters = \Closure::bind(function ($message, $data) {
+            return $this->setParameters($message, $data);
+        }, $this->transport, SendgridV3Transport::class);
+
+        $personalizations = [
+            [
+                'substitutions' => [
+                    'substitutions_key' => 'substitutions_value',
+                ],
+                'custom_args' => [
+                    'custom_args_key' => 'custom_args_value'
+                ],
+                'send_at' => time()
+            ],
+        ];
+
+        $message = new Message($this->getMessage());
+        $message->embedData([
+            'personalizations' => $personalizations,
+        ], 'sendgrid/x-smtpapi');
+        $data = [];
+        $data = $setParameters($message->getSwiftMessage(), $data);
+        $this->assertEquals(['personalizations' => $personalizations], $data);
     }
 
     public function testGetFrom()
