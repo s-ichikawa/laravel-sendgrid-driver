@@ -40,6 +40,7 @@ class SendgridV3Transport extends Transport
         $data = [
             'personalizations' => $this->getPersonalizations($message),
             'from'             => $this->getFrom($message),
+            'reply_to'         => $this->getReplyTo($message),
             'subject'          => $message->getSubject(),
             'content'          => $this->getContents($message),
         ];
@@ -101,6 +102,22 @@ class SendgridV3Transport extends Transport
     {
         if ($message->getFrom()) {
             foreach ($message->getFrom() as $email => $name) {
+                return ['email' => $email, 'name' => $name];
+            }
+        }
+        return [];
+    }
+
+    /**
+     * Get ReplyTo Addresses.
+     *
+     * @param Swift_Mime_Message $message
+     * @return array
+     */
+    private function getReplyTo(Swift_Mime_Message $message)
+    {
+        if ($message->getReplyTo()) {
+            foreach ($message->getReplyTo() as $email => $name) {
                 return ['email' => $email, 'name' => $name];
             }
         }
