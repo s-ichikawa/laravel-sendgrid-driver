@@ -175,13 +175,13 @@ class SendgridV3TransportTest extends TestCase
             return $this->getReplyTo($message);
         }, $this->transport, SendgridV3Transport::class);
 
-        $from = 'test@exsample.com';
-        $from_name = 'test_user';
+        $reply_to = 'test@exsample.com';
+        $reply_to_name = 'test_user';
 
         $message = $this->getMessage();
-        $message->setFrom($from, $from_name);
+        $message->setReplyTo($reply_to, $reply_to_name);
 
-        $this->assertEquals(['email' => $from, 'name' => $from_name], $getReplyTo($message));
+        $this->assertEquals(['email' => $reply_to, 'name' => $reply_to_name], $getReplyTo($message));
     }
 
     /**

@@ -40,10 +40,13 @@ class SendgridV3Transport extends Transport
         $data = [
             'personalizations' => $this->getPersonalizations($message),
             'from'             => $this->getFrom($message),
-            'reply_to'         => $this->getReplyTo($message),
             'subject'          => $message->getSubject(),
             'content'          => $this->getContents($message),
         ];
+
+        if ($reply_to = $this->getReplyTo($message)) {
+            $data['reply_to'] = $reply_to;
+        }
 
         $attachments = $this->getAttachments($message);
         if (count($attachments) > 0) {
@@ -121,7 +124,7 @@ class SendgridV3Transport extends Transport
                 return ['email' => $email, 'name' => $name];
             }
         }
-        return [];
+        return null;
     }
 
     /**
