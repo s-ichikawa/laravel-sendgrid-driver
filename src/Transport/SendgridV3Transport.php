@@ -44,6 +44,10 @@ class SendgridV3Transport extends Transport
             'content'          => $this->getContents($message),
         ];
 
+        if ($reply_to = $this->getReplyTo($message)) {
+            $data['reply_to'] = $reply_to;
+        }
+
         $attachments = $this->getAttachments($message);
         if (count($attachments) > 0) {
             $data['attachments'] = $attachments;
@@ -105,6 +109,22 @@ class SendgridV3Transport extends Transport
             }
         }
         return [];
+    }
+
+    /**
+     * Get ReplyTo Addresses.
+     *
+     * @param Swift_Mime_Message $message
+     * @return array
+     */
+    private function getReplyTo(Swift_Mime_Message $message)
+    {
+        if ($message->getReplyTo()) {
+            foreach ($message->getReplyTo() as $email => $name) {
+                return ['email' => $email, 'name' => $name];
+            }
+        }
+        return null;
     }
 
     /**

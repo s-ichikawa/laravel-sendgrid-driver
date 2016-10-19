@@ -144,6 +144,21 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals([$from, $from_name], $getFromAddresses($message));
     }
 
+
+    public function testSetReplyTo()
+    {
+        $reply_to = 'test@exsample.com';
+        $reply_to_name = 'test_user';
+        $setReplyTo = \Closure::bind(function (&$data, $message) {
+            $this->setReplyTo($data, $message);
+        }, $this->transport, 'Sichikawa\LaravelSendgridDriver\Transport\SendGridTransport');
+        $data = [];
+        $message = $this->getMessage();
+        $message->setReplyTo($reply_to, $reply_to_name);
+        $setReplyTo($data, $message);
+        $this->assertEquals($reply_to, $data['replyto']);
+    }
+
     /**
      * @return Swift_Message
      */
