@@ -169,6 +169,21 @@ class SendgridV3TransportTest extends TestCase
         $this->assertEquals(['email' => $from, 'name' => $from_name], $getFrom($message));
     }
 
+    public function testReplyTo()
+    {
+        $getReplyTo = \Closure::bind(function ($message) {
+            return $this->getReplyTo($message);
+        }, $this->transport, SendgridV3Transport::class);
+
+        $from = 'test@exsample.com';
+        $from_name = 'test_user';
+
+        $message = $this->getMessage();
+        $message->setFrom($from, $from_name);
+
+        $this->assertEquals(['email' => $from, 'name' => $from_name], $getReplyTo($message));
+    }
+
     /**
      * @return Swift_Message
      */
