@@ -212,9 +212,13 @@ class SendgridV3Transport extends Transport
 
     private function setPersonalizations(&$data, $personalizations)
     {
-        foreach ($personalizations as $params) {
+        foreach ($personalizations as $index => $params) {
             foreach ($params as $key => $val) {
-                array_set($data, 'personalizations.0.' . $key, $val);
+                if (in_array($key, ['to', 'cc', 'bcc'])) {
+                    array_set($data, 'personalizations.' . $index . '.' . $key, [$val]);
+                } else {
+                    array_set($data, 'personalizations.' . $index . '.' . $key, $val);
+                }
             }
         }
     }
