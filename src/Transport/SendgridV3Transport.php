@@ -183,6 +183,7 @@ class SendgridV3Transport extends Transport
      * @param Swift_Mime_Message $message
      * @param array $data
      * @return array
+     * @throws \Exception
      */
     protected function setParameters(Swift_Mime_Message $message, $data)
     {
@@ -201,10 +202,26 @@ class SendgridV3Transport extends Transport
         }
 
         foreach ($smtp_api as $key => $val) {
-            if ($key === 'personalizations') {
-                $this->setPersonalizations($data, $val);
-                continue;
+
+            switch($key) {
+
+                case 'personalizations':
+                    $this->setPersonalizations($data, $val);
+                    continue 2;
+
+                case 'unique_args':
+                    throw new \Exception('Sendgrid v3 now uses custom_args instead of unique_args');
+
+                case 'custom_args':
+                    foreach($val as $name => $value) {
+                        if (!is_string($value)) {
+                            throw new \Exception('Sendgrid v3 custom arguments have to be a string.');
+                        }
+                    }
+                    break;
+
             }
+
             array_set($data, $key, $val);
         }
         return $data;
