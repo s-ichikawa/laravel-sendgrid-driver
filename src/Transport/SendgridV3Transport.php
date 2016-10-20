@@ -82,17 +82,17 @@ class SendgridV3Transport extends Transport
             return $recipients;
         };
 
-        $personalizatioin['to'] = $setter($message->getTo());
+        $personalization['to'] = $setter($message->getTo());
 
         if ($cc = $message->getCc()) {
-            $personalizatioin['cc'] = $setter($cc);
+            $personalization['cc'] = $setter($cc);
         }
 
         if ($bcc = $message->getBcc()) {
-            $personalizatioin['bcc'] = $setter($bcc);
+            $personalization['bcc'] = $setter($bcc);
         }
 
-        return [$personalizatioin];
+        return [$personalization];
     }
 
     /**
