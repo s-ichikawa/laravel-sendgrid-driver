@@ -1,6 +1,6 @@
 {
     "name": "s-ichikawa/laravel-sendgrid-driver",
-    "description": "This liblary can add sendgrid driver into the laravel's mail configure.",
+    "description": "This library adds a 'sendgrid' mail driver to Laravel.",
     "license": "MIT",
     "require": {
         "illuminate/mail": "~5.1",
