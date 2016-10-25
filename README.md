@@ -139,9 +139,11 @@ config/service.php
 
 #Use SMTP API
 
-Sendgrid's [SMTP API](https://sendgrid.com/docs/API_Reference/SMTP_API/index.html) is so cool feature.
-This function can use by setting embed data to message.
-and, set 'sendgrid/x-smtpapi' to data name or content-type.
+Sendgrid's [SMTP API](https://sendgrid.com/docs/API_Reference/SMTP_API/index.html) is a very handy feature.
+
+To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
+
+##API v2
 
 ```
 \Mail::send('view', $data, function (Message $message) {
@@ -149,6 +151,10 @@ and, set 'sendgrid/x-smtpapi' to data name or content-type.
         ->to('foo@example.com', 'foo_name')
         ->from('bar@example.com', 'bar_name')
         ->embedData([
+            'to' => ['user1@example.com', 'user2@example.com'],
+            'sub' => [
+                '-email-' => ['user1@example.com', 'user2@example.com'],
+            ],
             'category' => 'user_group1',
             'unique_args' => [
                 'user_id' => 123
@@ -156,4 +162,50 @@ and, set 'sendgrid/x-smtpapi' to data name or content-type.
         ], 'sendgrid/x-smtpapi');
 });
 ```
+
+##API v3
+
+```
+\Mail::send('view', $data, function (Message $message) {
+    $message
+        ->to('foo@example.com', 'foo_name')
+        ->from('bar@example.com', 'bar_name')
+        ->setReplyTo('foo@bar.com', 'foobar');
+        ->embedData([
+            'personalizations' => [
+                [
+                    'to' => [
+                        'email' => 'user1@example.com',
+                        'name' => 'user1',
+                    ],
+                    'substitutions' => [
+                        '-email-' => 'user1@example.com',
+                    ],
+                ],
+                [
+                    'to' => [
+                        'email' => 'user2@example.com',
+                        'name' => 'user2',
+                    ],
+                    'substitutions' => [
+                        '-email-' => 'user2@example.com',
+                    ],
+                ],
+            ],
+            'categories' => ['user_group1'],
+            'custom_args' => [
+                'user_id' => "123" // Make sure this is a string value
+            ]
+        ], 'sendgrid/x-smtpapi');
+});
+```
+
+- custom_args values have to be strings. Sendgrid API gives a non-descriptive error message when you enter non-string values.
+
+## Difference v2 vs v3
+
+Have a look at '[How to migrate](https://sendgrid.com/docs/Classroom/Send/v3_Mail_Send/how_to_migrate_from_v2_to_v3_mail_send.html)' for more information on the difference in parameters.
+
+
+
 
