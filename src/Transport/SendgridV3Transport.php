@@ -18,7 +18,7 @@ class SendgridV3Transport extends Transport
     private $options;
     private $pretend;
 
-    public function __construct(ClientInterface $client, $api_key, $pretend = false)
+    public function __construct(ClientInterface $client, $api_key)
     {
         $this->client = $client;
         $this->options = [
@@ -27,7 +27,6 @@ class SendgridV3Transport extends Transport
                 'Content-Type'  => 'application/json',
             ],
         ];
-        $this->pretend = $pretend;
     }
 
     /**
@@ -57,9 +56,6 @@ class SendgridV3Transport extends Transport
 
         $payload['json'] = $data;
 
-        if ($this->pretend) {
-            return [self::BASE_URL, $payload];
-        }
         return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
     }
 
