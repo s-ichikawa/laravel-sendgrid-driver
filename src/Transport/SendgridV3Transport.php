@@ -18,7 +18,7 @@ class SendgridV3Transport extends Transport
     private $options;
     private $pretend;
 
-    public function __construct(ClientInterface $client, $api_key, $pretend = false)
+    public function __construct(ClientInterface $client, $api_key)
     {
         $this->client = $client;
         $this->options = [
@@ -27,7 +27,6 @@ class SendgridV3Transport extends Transport
                 'Content-Type'  => 'application/json',
             ],
         ];
-        $this->pretend = $pretend;
     }
 
     /**
@@ -57,9 +56,6 @@ class SendgridV3Transport extends Transport
 
         $payload['json'] = $data;
 
-        if ($this->pretend) {
-            return [self::BASE_URL, $payload];
-        }
         return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
     }
 
@@ -82,17 +78,17 @@ class SendgridV3Transport extends Transport
             return $recipients;
         };
 
-        $personalizatioin['to'] = $setter($message->getTo());
+        $personalization['to'] = $setter($message->getTo());
 
         if ($cc = $message->getCc()) {
-            $personalizatioin['cc'] = $setter($cc);
+            $personalization['cc'] = $setter($cc);
         }
 
         if ($bcc = $message->getBcc()) {
-            $personalizatioin['bcc'] = $setter($bcc);
+            $personalization['bcc'] = $setter($bcc);
         }
 
-        return [$personalizatioin];
+        return [$personalization];
     }
 
     /**
@@ -183,6 +179,7 @@ class SendgridV3Transport extends Transport
      * @param Swift_Mime_Message $message
      * @param array $data
      * @return array
+     * @throws \Exception
      */
     protected function setParameters(Swift_Mime_Message $message, $data)
     {
@@ -201,10 +198,26 @@ class SendgridV3Transport extends Transport
         }
 
         foreach ($smtp_api as $key => $val) {
-            if ($key === 'personalizations') {
-                $this->setPersonalizations($data, $val);
-                continue;
+
+            switch($key) {
+
+                case 'personalizations':
+                    $this->setPersonalizations($data, $val);
+                    continue 2;
+
+                case 'unique_args':
+                    throw new \Exception('Sendgrid v3 now uses custom_args instead of unique_args');
+
+                case 'custom_args':
+                    foreach($val as $name => $value) {
+                        if (!is_string($value)) {
+                            throw new \Exception('Sendgrid v3 custom arguments have to be a string.');
+                        }
+                    }
+                    break;
+
             }
+
             array_set($data, $key, $val);
         }
         return $data;

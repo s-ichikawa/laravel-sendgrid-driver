@@ -29,8 +29,7 @@ class SendgridTransportServiceProvider extends ServiceProvider
             $client = new HttpClient(Arr::get($config, 'guzzle', []));
 
             if (Arr::get($config, 'version') === 'v3') {
-                $pretend = isset($config['pretend']) ? $config['pretend'] : false;
-                return new SendgridV3Transport($client, $config['api_key'], $pretend);
+                return new SendgridV3Transport($client, $config['api_key']);
             }
 
             return new SendgridTransport($client, $config['api_key']);
