@@ -16,7 +16,6 @@ class SendgridV3Transport extends Transport
 
     private $client;
     private $options;
-    private $pretend;
 
     public function __construct(ClientInterface $client, $api_key)
     {
