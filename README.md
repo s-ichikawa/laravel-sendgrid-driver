@@ -92,12 +92,12 @@ MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
-config/service.php
+config/services.php
 ```
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY'),
-        'version' => 'v3'
-    ]
+        'version' => 'v3',
+    ],
 ```
 
 ##Request Body Parameters
@@ -130,11 +130,11 @@ MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
-config/service.php
+config/services.php
 ```
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY')
-    ]
+    ],
 ```
 
 #Use SMTP API
