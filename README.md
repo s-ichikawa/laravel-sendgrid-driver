@@ -82,6 +82,15 @@ $app->register(Sichikawa\LaravelSendgridDriver\MailServiceProvider::class);
 unset($app->availableBindings['mailer']);
 ```
 
+Create mail config files.
+config/mail.php
+```
+<?php
+return [
+    'driver' => env('MAIL_DRIVER', 'sendgrid'),
+];
+```
+
 #API v3
 
 ##Configure
@@ -92,7 +101,7 @@ MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
-config/services.php
+config/services.php (In using lumen, require creating config directory and file.)
 ```
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY'),
@@ -130,7 +139,7 @@ MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
-config/services.php
+config/services.php (In using lumen, require creating config directory and file.)
 ```
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY')
