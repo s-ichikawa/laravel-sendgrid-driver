@@ -158,7 +158,7 @@ class SendgridV3Transport extends Transport
     {
         $attachments = [];
         foreach ($message->getChildren() as $attachment) {
-            if (!$attachment instanceof Swift_Attachment || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE) {
+            if ((!$attachment instanceof Swift_Attachment && !$attachment instanceof Swift_Image) || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE) {
                 continue;
             }
             $attachments[] = [
