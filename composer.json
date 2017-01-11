@@ -4,7 +4,8 @@
     "license": "MIT",
     "require": {
         "illuminate/mail": "~5.1",
-        "guzzlehttp/guzzle": "~5.3|~6.2"
+        "guzzlehttp/guzzle": "~5.3|~6.2",
+        "devster/ubench": "^1.2"
     },
     "require-dev": {
         "illuminate/container": "~5.1.0",
