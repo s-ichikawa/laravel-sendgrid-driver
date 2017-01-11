@@ -179,7 +179,7 @@ To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
     $message
         ->to('foo@example.com', 'foo_name')
         ->from('bar@example.com', 'bar_name')
-        ->setReplyTo('foo@bar.com', 'foobar');
+        ->replyTo('foo@bar.com', 'foobar');
         ->embedData([
             'personalizations' => [
                 [
