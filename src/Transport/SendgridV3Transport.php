@@ -16,6 +16,7 @@ class SendgridV3Transport extends Transport
 
     private $client;
     private $options;
+    private $attachments;
 
     public function __construct(ClientInterface $client, $api_key)
     {
@@ -158,7 +159,10 @@ class SendgridV3Transport extends Transport
     {
         $attachments = [];
         foreach ($message->getChildren() as $attachment) {
-            if ((!$attachment instanceof Swift_Attachment && !$attachment instanceof Swift_Image) || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE) {
+            if ((!$attachment instanceof Swift_Attachment && !$attachment instanceof Swift_Image)
+                || $attachment->getFilename() === self::SMTP_API_NAME
+                || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE
+            ) {
                 continue;
             }
             $attachments[] = [
@@ -169,7 +173,7 @@ class SendgridV3Transport extends Transport
                 'content_id'  => $attachment->getId(),
             ];
         }
-        return $attachments;
+        return $this->attachments = $attachments;
     }
 
     /**
@@ -198,17 +202,21 @@ class SendgridV3Transport extends Transport
 
         foreach ($smtp_api as $key => $val) {
 
-            switch($key) {
+            switch ($key) {
 
                 case 'personalizations':
                     $this->setPersonalizations($data, $val);
                     continue 2;
 
+                case 'attachments':
+                    $val = array_merge($this->attachments, $val);
+                    break;
+
                 case 'unique_args':
                     throw new \Exception('Sendgrid v3 now uses custom_args instead of unique_args');
 
                 case 'custom_args':
-                    foreach($val as $name => $value) {
+                    foreach ($val as $name => $value) {
                         if (!is_string($value)) {
                             throw new \Exception('Sendgrid v3 custom arguments have to be a string.');
                         }
