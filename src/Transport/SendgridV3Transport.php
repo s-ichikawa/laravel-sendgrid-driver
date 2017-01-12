@@ -1,7 +1,9 @@
 <?php
 namespace Sichikawa\LaravelSendgridDriver\Transport;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Mail\Transport\Transport;
 use Swift_Attachment;
 use Swift_Image;
@@ -14,9 +16,13 @@ class SendgridV3Transport extends Transport
     const SMTP_API_NAME = 'sendgrid/x-smtpapi';
     const BASE_URL = 'https://api.sendgrid.com/v3/mail/send';
 
+    /**
+     * @var Client
+     */
     private $client;
     private $options;
     private $attachments;
+    private $numberOfRecipients;
 
     public function __construct(ClientInterface $client, $api_key)
     {
@@ -58,7 +64,13 @@ class SendgridV3Transport extends Transport
 
         $payload['json'] = $data;
 
-        return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
+        $response = $this->post($payload);
+
+        $message->getHeaders()->addTextHeader('X-Message-Id', $response->getHeaderLine('X-Message-Id'));
+
+        $this->sendPerformed($message);
+
+        return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
     }
 
     /**
@@ -188,6 +200,8 @@ class SendgridV3Transport extends Transport
      */
     protected function setParameters(Swift_Mime_Message $message, $data)
     {
+        $this->numberOfRecipients = 0;
+
         $smtp_api = [];
         foreach ($message->getChildren() as $attachment) {
             if (!$attachment instanceof Swift_Image
@@ -238,10 +252,20 @@ class SendgridV3Transport extends Transport
             foreach ($params as $key => $val) {
                 if (in_array($key, ['to', 'cc', 'bcc'])) {
                     array_set($data, 'personalizations.' . $index . '.' . $key, [$val]);
+                    ++$this->numberOfRecipients;
                 } else {
                     array_set($data, 'personalizations.' . $index . '.' . $key, $val);
                 }
             }
         }
+    }
+
+    /**
+     * @param $payload
+     * @return Response
+     */
+    private function post($payload)
+    {
+        return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
     }
 }
