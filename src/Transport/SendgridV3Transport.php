@@ -34,6 +34,8 @@ class SendgridV3Transport extends Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
+        $this->beforeSendPerformed($message);
+
         $payload = $this->options;
 
         $data = [
