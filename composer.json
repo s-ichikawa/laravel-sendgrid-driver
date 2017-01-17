@@ -3,12 +3,12 @@
     "description": "This library adds a 'sendgrid' mail driver to Laravel.",
     "license": "MIT",
     "require": {
-        "illuminate/mail": "~5.1",
+        "illuminate/mail": "~5.3",
         "guzzlehttp/guzzle": "~5.3|~6.2"
     },
     "require-dev": {
-        "illuminate/container": "~5.1.0",
-        "illuminate/filesystem": "~5.1.0",
+        "illuminate/container": "~5.3",
+        "illuminate/filesystem": "~5.3",
         "phpunit/phpunit": ">=4.0"
     },
     "autoload": {

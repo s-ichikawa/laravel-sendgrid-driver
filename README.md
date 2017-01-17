@@ -15,6 +15,27 @@ Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 If your project using guzzlehttp/guzzle 6.2.0 or less, you can use version [1.0.0](https://github.com/s-ichikawa/laravel-sendgrid-driver/tree/1.0.0)
 But the old version has [security issues](https://github.com/guzzle/guzzle/releases/tag/6.2.1), 
 
+#Install (Laravel5.3~)
+
+Add the package to your composer.json and run composer update.
+```json
+"require": {
+    "s-ichikawa/laravel-sendgrid-driver": "^1.2"
+},
+```
+
+or installed with composer
+```
+$ composer require s-ichikawa/laravel-sendgrid-driver
+```
+
+Add the sendgrid service provider in config/app.php:
+```php
+'providers' => [
+    Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
+];
+```
+
 #Install (Laravel5.1~)
 
 Add the package to your composer.json and run composer update.
@@ -26,7 +47,7 @@ Add the package to your composer.json and run composer update.
 
 or installed with composer
 ```
-$ composer require s-ichikawa/laravel-sendgrid-driver
+$ composer require s-ichikawa/laravel-sendgrid-driver:^1.1
 ```
 
 Add the sendgrid service provider in config/app.php:
