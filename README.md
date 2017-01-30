@@ -239,12 +239,31 @@ Have a look at '[How to migrate](https://sendgrid.com/docs/Classroom/Send/v3_Mai
 
 ## Use in Mailable
 
-```
-class Smaple
+```php
+<?
+use Sichikawa\LaravelSendgridDriver\SendGrid;
+
+class SendGridSample extends Mailable
 {
     use SendGrid;
     
-    
+    public function build()
+    {
+        return $this
+            ->view('template name')
+            ->subject('subject')
+            ->from('from@example.com')
+            ->to(['to@example.com'])
+            ->sendgrid([
+                'personalizations' => [
+                    [
+                        'substitutions' => [
+                            ':myname' => 's-ichikawa',
+                        ],
+                    ],
+                ],
+            ]);
+    }
 }
 ```
 
