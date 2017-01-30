@@ -72,7 +72,10 @@ class SendgridV3Transport extends Transport
             $this->sendPerformed($message);
         }
 
-        return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
+        if (is_callable("numberOfRecipients")) {
+            return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
+        }
+        return $response;
     }
 
     /**
