@@ -28,6 +28,6 @@
         }
     ],
     "suggest": {
-        "s-ichikawa": "support to build json for sendgrid api"
+        "s-ichikawa/sendgrid-api-builder": "support to build json for sendgrid api"
     }
 }
