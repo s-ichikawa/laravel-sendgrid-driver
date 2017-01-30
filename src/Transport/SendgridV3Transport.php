@@ -68,7 +68,9 @@ class SendgridV3Transport extends Transport
 
         $message->getHeaders()->addTextHeader('X-Message-Id', $response->getHeaderLine('X-Message-Id'));
 
-        $this->sendPerformed($message);
+        if (is_callable("sendPerformed")) {
+            $this->sendPerformed($message);
+        }
 
         return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
     }

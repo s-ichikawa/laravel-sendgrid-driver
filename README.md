@@ -237,5 +237,14 @@ To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
 Have a look at '[How to migrate](https://sendgrid.com/docs/Classroom/Send/v3_Mail_Send/how_to_migrate_from_v2_to_v3_mail_send.html)' for more information on the difference in parameters.
 
 
+## Use in Mailable
 
+```
+class Smaple
+{
+    use SendGrid;
+    
+    
+}
+```
 
