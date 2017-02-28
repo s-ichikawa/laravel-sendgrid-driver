@@ -3,7 +3,6 @@ namespace Sichikawa\LaravelSendgridDriver\Transport;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Mail\Transport\Transport;
 use Swift_Attachment;
 use Swift_Image;
@@ -66,7 +65,9 @@ class SendgridV3Transport extends Transport
 
         $response = $this->post($payload);
 
-        $message->getHeaders()->addTextHeader('X-Message-Id', $response->getHeaderLine('X-Message-Id'));
+        if (method_exists($response, 'getHeaderLine')) {
+            $message->getHeaders()->addTextHeader('X-Message-Id', $response->getHeaderLine('X-Message-Id'));
+        }
 
         if (is_callable("sendPerformed")) {
             $this->sendPerformed($message);
