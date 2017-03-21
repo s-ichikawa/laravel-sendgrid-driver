@@ -10,12 +10,12 @@ This library extends the original Laravel classes, so it uses exactly the same m
 To use this package required your [Sendgrid Api Key](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html).
 Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
-#Notification
+# Notification
 
 If your project using guzzlehttp/guzzle 6.2.0 or less, you can use version [1.0.0](https://github.com/s-ichikawa/laravel-sendgrid-driver/tree/1.0.0)
 But the old version has [security issues](https://github.com/guzzle/guzzle/releases/tag/6.2.1), 
 
-#Install (Laravel5.1~)
+# Install (Laravel5.1~)
 
 Add the package to your composer.json and run composer update.
 ```json
@@ -36,7 +36,7 @@ Add the sendgrid service provider in config/app.php:
 ];
 ```
 
-#Install (Laravel5.0)
+# Install (Laravel5.0)
 
 Add the package to your composer.json and run composer update.
 ```json
@@ -91,9 +91,9 @@ return [
 ];
 ```
 
-#API v3
+# API v3
 
-##Configure
+## Configure
 
 .env
 ```
@@ -109,7 +109,7 @@ config/services.php (In using lumen, require creating config directory and file.
     ],
 ```
 
-##Request Body Parameters
+## Request Body Parameters
 
 Every request made to /v3/mail/send will require a request body formatted in JSON containing your email’s content and metadata.
 Required parameters are set by Laravel's usually mail sending, but you can also use useful features like "categories" and "send_at".
@@ -129,9 +129,9 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
 more info
 https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
 
-#API v2
+# API v2
 
-##Configure
+## Configure
 
 .env
 ```
@@ -146,13 +146,13 @@ config/services.php (In using lumen, require creating config directory and file.
     ],
 ```
 
-#Use SMTP API
+# Use SMTP API
 
 Sendgrid's [SMTP API](https://sendgrid.com/docs/API_Reference/SMTP_API/index.html) is a very handy feature.
 
 To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
 
-##API v2
+## API v2
 
 ```
 \Mail::send('view', $data, function (Message $message) {
@@ -172,7 +172,7 @@ To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
 });
 ```
 
-##API v3
+## API v3
 
 ```
 \Mail::send('view', $data, function (Message $message) {
