@@ -1,6 +1,7 @@
 <?php
 namespace Sichikawa\LaravelSendgridDriver\Transport;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Mail\Transport\Transport;
 use Swift_Attachment;
@@ -14,11 +15,15 @@ class SendgridV3Transport extends Transport
     const SMTP_API_NAME = 'sendgrid/x-smtpapi';
     const BASE_URL = 'https://api.sendgrid.com/v3/mail/send';
 
+    /**
+     * @var Client
+     */
     private $client;
     private $options;
-    private $pretend;
+    private $attachments;
+    private $numberOfRecipients;
 
-    public function __construct(ClientInterface $client, $api_key, $pretend = false)
+    public function __construct(ClientInterface $client, $api_key)
     {
         $this->client = $client;
         $this->options = [
@@ -27,7 +32,6 @@ class SendgridV3Transport extends Transport
                 'Content-Type'  => 'application/json',
             ],
         ];
-        $this->pretend = $pretend;
     }
 
     /**
@@ -35,6 +39,8 @@ class SendgridV3Transport extends Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
+        $this->beforeSendPerformed($message);
+
         $payload = $this->options;
 
         $data = [
@@ -57,10 +63,20 @@ class SendgridV3Transport extends Transport
 
         $payload['json'] = $data;
 
-        if ($this->pretend) {
-            return [self::BASE_URL, $payload];
+        $response = $this->post($payload);
+
+        if (method_exists($response, 'getHeaderLine')) {
+            $message->getHeaders()->addTextHeader('X-Message-Id', $response->getHeaderLine('X-Message-Id'));
         }
-        return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
+
+        if (is_callable("sendPerformed")) {
+            $this->sendPerformed($message);
+        }
+
+        if (is_callable("numberOfRecipients")) {
+            return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
+        }
+        return $response;
     }
 
     /**
@@ -163,7 +179,10 @@ class SendgridV3Transport extends Transport
     {
         $attachments = [];
         foreach ($message->getChildren() as $attachment) {
-            if (!$attachment instanceof Swift_Attachment || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE) {
+            if ((!$attachment instanceof Swift_Attachment && !$attachment instanceof Swift_Image)
+                || $attachment->getFilename() === self::SMTP_API_NAME
+                || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE
+            ) {
                 continue;
             }
             $attachments[] = [
@@ -174,7 +193,7 @@ class SendgridV3Transport extends Transport
                 'content_id'  => $attachment->getId(),
             ];
         }
-        return $attachments;
+        return $this->attachments = $attachments;
     }
 
     /**
@@ -183,9 +202,12 @@ class SendgridV3Transport extends Transport
      * @param Swift_Mime_Message $message
      * @param array $data
      * @return array
+     * @throws \Exception
      */
     protected function setParameters(Swift_Mime_Message $message, $data)
     {
+        $this->numberOfRecipients = 0;
+
         $smtp_api = [];
         foreach ($message->getChildren() as $attachment) {
             if (!$attachment instanceof Swift_Image
@@ -201,10 +223,30 @@ class SendgridV3Transport extends Transport
         }
 
         foreach ($smtp_api as $key => $val) {
-            if ($key === 'personalizations') {
-                $this->setPersonalizations($data, $val);
-                continue;
+
+            switch ($key) {
+
+                case 'personalizations':
+                    $this->setPersonalizations($data, $val);
+                    continue 2;
+
+                case 'attachments':
+                    $val = array_merge($this->attachments, $val);
+                    break;
+
+                case 'unique_args':
+                    throw new \Exception('Sendgrid v3 now uses custom_args instead of unique_args');
+
+                case 'custom_args':
+                    foreach ($val as $name => $value) {
+                        if (!is_string($value)) {
+                            throw new \Exception('Sendgrid v3 custom arguments have to be a string.');
+                        }
+                    }
+                    break;
+
             }
+
             array_set($data, $key, $val);
         }
         return $data;
@@ -216,10 +258,20 @@ class SendgridV3Transport extends Transport
             foreach ($params as $key => $val) {
                 if (in_array($key, ['to', 'cc', 'bcc'])) {
                     array_set($data, 'personalizations.' . $index . '.' . $key, [$val]);
+                    ++$this->numberOfRecipients;
                 } else {
                     array_set($data, 'personalizations.' . $index . '.' . $key, $val);
                 }
             }
         }
+    }
+
+    /**
+     * @param $payload
+     * @return Response
+     */
+    private function post($payload)
+    {
+        return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
     }
 }

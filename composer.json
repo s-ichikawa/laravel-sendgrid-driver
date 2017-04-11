@@ -7,8 +7,8 @@
         "guzzlehttp/guzzle": "~5.3|~6.2"
     },
     "require-dev": {
-        "illuminate/container": "~5.1.0",
-        "illuminate/filesystem": "~5.1.0",
+        "illuminate/container": "~5.1",
+        "illuminate/filesystem": "~5.1",
         "phpunit/phpunit": ">=4.0"
     },
     "autoload": {
@@ -26,5 +26,8 @@
             "name": "shingo.ichikawa",
             "email": "ichikawa.shingo.0829@gmail.com"
         }
-    ]
+    ],
+    "suggest": {
+        "s-ichikawa/sendgrid-api-builder": "support to build json for sendgrid api"
+    }
 }
