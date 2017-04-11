@@ -114,6 +114,7 @@ config/services.php (In using lumen, require creating config directory and file.
 Every request made to /v3/mail/send will require a request body formatted in JSON containing your email’s content and metadata.
 Required parameters are set by Laravel's usually mail sending, but you can also use useful features like "categories" and "send_at".
 
+### Laravel <5.4
 ```
 \Mail::send('view', $data, function (Message $message) {
     $message
@@ -124,6 +125,18 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
             'send_at' => $send_at->getTimestamp(),
         ], 'sendgrid/x-smtpapi');
 });
+```
+
+### Laravel 5.4 
+Laravel 5.4 no longer has embedData() function. You should now use attachData() in your Mailable build() method.
+```
+->attachData([
+    'categories' => ['category1'], // Array of categories
+    'custom_args' => [
+        'arg1' => (string) 1, // Needs typecasting, because it has to be strings (Sendgrid API requirement)
+        'arg2' => "foo",
+    ],
+], 'sendgrid/x-smtpapi')
 ```
 
 more info
