@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Mail\TransportManager;
-use Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider;
-
-class TestCase extends \PHPUnit_Framework_TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string
