@@ -152,23 +152,39 @@ class SendgridV3Transport extends Transport
      */
     private function getContents(Swift_Mime_Message $message)
     {
-        $content = [];
-        foreach ($message->getChildren() as $attachment) {
-            if ($attachment instanceof Swift_MimePart) {
-                $content[] = [
-                    'type'  => 'text/plain',
-                    'value' => $attachment->getBody(),
+        $contentType = $message->getContentType();
+        switch ($contentType) {
+            case 'text/plain':
+                return [
+                    [
+                        'type'  => 'text/plain',
+                        'value' => $message->getBody(),
+
+                    ],
                 ];
-                break;
-            }
+            case 'text/html':
+                return [
+                    [
+                        'type'  => 'text/html',
+                        'value' => $message->getBody(),
+                    ],
+                ];
         }
 
-        if (empty($content) || strpos($message->getContentType(), 'multipart') !== false) {
-            $content[] = [
-                'type'  => 'text/html',
-                'value' => $message->getBody(),
-            ];
+        // Following RFC 1341, text/html after text/plain in multipart
+        $content = [];
+        foreach ($message->getChildren() as $child) {
+            if ($child instanceof Swift_MimePart && $child->getContentType() === 'text/plain') {
+                $content[] = [
+                    'type'  => 'text/plain',
+                    'value' => $child->getBody(),
+                ];
+            }
         }
+        $content[] = [
+            'type'  => 'text/html',
+            'value' => $message->getBody(),
+        ];
         return $content;
     }
 
