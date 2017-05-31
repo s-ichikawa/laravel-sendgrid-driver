@@ -227,7 +227,7 @@ class SendgridV3Transport extends Transport
 
         $smtp_api = [];
         foreach ($message->getChildren() as $attachment) {
-            if (!$attachment instanceof Swift_Image
+            if ( (!$attachment instanceof Swift_Image && !$attachment instanceof Swift_Attachment)
                 || !in_array(self::SMTP_API_NAME, [$attachment->getFilename(), $attachment->getContentType()])
             ) {
                 continue;
