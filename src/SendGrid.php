@@ -13,7 +13,7 @@ trait SendGrid
      */
     public function sendgrid($params)
     {
-        if ($this instanceof Mailable) {
+        if ($this instanceof Mailable && env('MAIL_DRIVER') == "sendgrid") {
             $this->withSwiftMessage(function (Swift_Message $message) use ($params) {
                 $message->embed(\Swift_Image::newInstance($params, 'sendgrid/x-smtpapi'));
             });
