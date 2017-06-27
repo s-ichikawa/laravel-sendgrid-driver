@@ -129,7 +129,7 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
 more info
 https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
 
-# API v2
+# API v2 (deprecated)
 
 ## Configure
 

@@ -8,6 +8,9 @@ use Swift_Image;
 use Swift_Mime_Message;
 use Swift_MimePart;
 
+/**
+ * @deprecated
+ */
 class SendgridTransport extends Transport
 {
     const MAXIMUM_FILE_SIZE = 7340032;
