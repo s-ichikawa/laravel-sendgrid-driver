@@ -4,13 +4,13 @@
     "keywords": ["laravel", "sendgrid"],
     "license": "MIT",
     "require": {
-        "illuminate/mail": "~5.1",
+        "illuminate/mail": "~5.3",
         "guzzlehttp/guzzle": "~5.3|~6.2"
     },
     "require-dev": {
-        "illuminate/container": "~5.1",
-        "illuminate/filesystem": "~5.1",
-        "phpunit/phpunit": ">=4.0"
+        "illuminate/container": "~5.3",
+        "illuminate/filesystem": "~5.3",
+        "phpunit/phpunit": "~5.7"
     },
     "autoload": {
         "psr-4": {

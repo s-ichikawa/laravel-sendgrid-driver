@@ -10,9 +10,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         parent::setUp();
-        $filesystem = new \Illuminate\Filesystem\Filesystem;
-        $services = $filesystem->getRequire(__DIR__ . '/config/services.php');
-        $this->api_key = $services['sendgrid']['api_key'];
+        $this->api_key = env('SENDGRID_API_KEY');
     }
 }
 
