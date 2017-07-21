@@ -15,12 +15,12 @@ Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 If your project using guzzlehttp/guzzle 6.2.0 or less, you can use version [1.0.0](https://github.com/s-ichikawa/laravel-sendgrid-driver/tree/1.0.0)
 But the old version has [security issues](https://github.com/guzzle/guzzle/releases/tag/6.2.1), 
 
-# Install (Laravel5.1~)
+# Install (Laravel)
 
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "^1.2"
+    "s-ichikawa/laravel-sendgrid-driver": "~2.0"
 },
 ```
 
@@ -32,30 +32,7 @@ $ composer require s-ichikawa/laravel-sendgrid-driver
 Add the sendgrid service provider in config/app.php:
 ```php
 'providers' => [
-    Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
-];
-```
-
-# Install (Laravel5.0)
-
-Add the package to your composer.json and run composer update.
-```json
-"require": {
-    "s-ichikawa/laravel-sendgrid-driver": "5.0.x-dev"
-},
-```
-
-or installed with composer
-```
-$ composer require s-ichikawa/laravel-sendgrid-driver:5.0.x-dev
-```
-
-Remove the default service provider and add the sendgrid service provider in config/app.php:
-```php
-'providers' => [
-//  'Illuminate\Mail\MailServiceProvider',
-
-    'Sichikawa\LaravelSendgridDriver\MailServiceProvider',
+    Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class
 ];
 ```
 
@@ -64,7 +41,7 @@ Remove the default service provider and add the sendgrid service provider in con
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "^1.1"
+    "s-ichikawa/laravel-sendgrid-driver": ~2.0
 },
 ```
 
@@ -91,8 +68,6 @@ return [
 ];
 ```
 
-# API v3
-
 ## Configure
 
 .env
@@ -105,7 +80,6 @@ config/services.php (In using lumen, require creating config directory and file.
 ```
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY'),
-        'version' => 'v3',
     ],
 ```
 
@@ -129,48 +103,6 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
 more info
 https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
 
-# API v2 (deprecated)
-
-## Configure
-
-.env
-```
-MAIL_DRIVER=sendgrid
-SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
-```
-
-config/services.php (In using lumen, require creating config directory and file.)
-```
-    'sendgrid' => [
-        'api_key' => env('SENDGRID_API_KEY')
-    ],
-```
-
-# Use SMTP API
-
-Sendgrid's [SMTP API](https://sendgrid.com/docs/API_Reference/SMTP_API/index.html) is a very handy feature.
-
-To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
-
-## API v2
-
-```
-\Mail::send('view', $data, function (Message $message) {
-    $message
-        ->to('foo@example.com', 'foo_name')
-        ->from('bar@example.com', 'bar_name')
-        ->embedData([
-            'to' => ['user1@example.com', 'user2@example.com'],
-            'sub' => [
-                '-email-' => ['user1@example.com', 'user2@example.com'],
-            ],
-            'category' => 'user_group1',
-            'unique_args' => [
-                'user_id' => 123
-            ]
-        ], 'sendgrid/x-smtpapi');
-});
-```
 
 ## API v3
 
@@ -210,10 +142,6 @@ To use this 'sendgrid/x-smtpapi' functionality, use our embedData() function.
 ```
 
 - custom_args values have to be strings. Sendgrid API gives a non-descriptive error message when you enter non-string values.
-
-## Difference v2 vs v3
-
-Have a look at '[How to migrate](https://sendgrid.com/docs/Classroom/Send/v3_Mail_Send/how_to_migrate_from_v2_to_v3_mail_send.html)' for more information on the difference in parameters.
 
 
 ## Use in Mailable
