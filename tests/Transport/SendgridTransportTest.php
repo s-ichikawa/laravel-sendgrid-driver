@@ -163,7 +163,7 @@ class SendgridTransportTest extends TestCase
         }, $this->transport, SendgridTransport::class);
 
         $message = new Message($this->getMessage());
-        $message->getSwiftMessage()->setChildren([Swift_MimePart::newInstance(
+        $message->getSwiftMessage()->setChildren([new Swift_MimePart(
             'This is a test.'
         )]);
 
