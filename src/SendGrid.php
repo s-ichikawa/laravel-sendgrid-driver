@@ -17,7 +17,7 @@ trait SendGrid
     {
         if ($this instanceof Mailable && $this->mailDriver() == "sendgrid") {
             $this->withSwiftMessage(function (Swift_Message $message) use ($params) {
-                $message->embed(\Swift_Image::newInstance($params, SendgridTransport::SMTP_API_NAME));
+                $message->embed(new \Swift_Image($params, SendgridTransport::SMTP_API_NAME));
             });
         }
         return $this;
