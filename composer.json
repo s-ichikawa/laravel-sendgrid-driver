@@ -28,6 +28,9 @@
             "email": "ichikawa.shingo.0829@gmail.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/s-ichikawa/laravel-sendgrid-driver/issues"
+    },
     "suggest": {
         "s-ichikawa/sendgrid-api-builder": "support to build json for sendgrid api"
     }
