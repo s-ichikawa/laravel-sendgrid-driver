@@ -30,5 +30,12 @@
     ],
     "suggest": {
         "s-ichikawa/sendgrid-api-builder": "support to build json for sendgrid api"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sichikawa\\LaravelSendgridDriver\\SendgridTransportServiceProvider"
+            ]
+        }
     }
 }
