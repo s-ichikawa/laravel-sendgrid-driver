@@ -263,6 +263,32 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals(['email' => $reply_to, 'name' => $reply_to_name], $getReplyTo($message));
     }
 
+    public function testOverrideApiKey()
+    {
+        $container = [];
+        $history = GuzzleHttp\Middleware::history($container);
+        $stack = GuzzleHttp\HandlerStack::create();
+        $stack->push($history);
+        $client = new GuzzleHttp\Client(['handler' => $stack]);
+        $transport = new SendgridTransport($client, 'This is the wrong value');
+
+        $message = new Message($this->getMessage());
+        $message->from('from@sink.sendgrid.net', 'test_from')
+            ->to('to@sink.sendgrid.net', 'test_to')
+            ->embedData([
+                'api_key' => $this->api_key,
+                'custom_args' => [
+                    'custom_args_key' => 'custom_args_value',
+                ],
+            ], 'sendgrid/x-smtpapi');
+        $transport->send($message->getSwiftMessage());
+
+        /** @var \GuzzleHttp\Psr7\Request $request */
+        $request = array_get($container, '0.request');
+        $this->assertEquals('Bearer ' . $this->api_key, $request->getHeaderLine('Authorization'));
+        $this->assertNotContains('"api_key":', (string)$request->getBody());
+    }
+
     /**
      * @return Swift_Message
      */
