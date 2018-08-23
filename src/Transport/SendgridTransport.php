@@ -23,10 +23,12 @@ class SendgridTransport extends Transport
     private $options;
     private $attachments;
     private $numberOfRecipients;
+    private $apiKey;
 
     public function __construct(ClientInterface $client, $api_key)
     {
         $this->client = $client;
+        $this->apiKey = $api_key;
         $this->options = [
             'headers' => [
                 'Authorization' => 'Bearer ' . $api_key,
@@ -63,6 +65,8 @@ class SendgridTransport extends Transport
         $data = $this->setParameters($message, $data);
 
         $payload['json'] = $data;
+
+        array_set($payload, 'headers.Authorization', 'Bearer ' . $this->apiKey);
 
         $response = $this->post($payload);
 
@@ -242,6 +246,10 @@ class SendgridTransport extends Transport
         foreach ($smtp_api as $key => $val) {
 
             switch ($key) {
+
+                case 'api_key':
+                    $this->apiKey = $val;
+                    continue 2;
 
                 case 'personalizations':
                     $this->setPersonalizations($data, $val);
