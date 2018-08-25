@@ -20,7 +20,6 @@ class SendgridTransport extends Transport
      * @var Client
      */
     private $client;
-    private $options;
     private $attachments;
     private $numberOfRecipients;
     private $apiKey;
@@ -29,12 +28,6 @@ class SendgridTransport extends Transport
     {
         $this->client = $client;
         $this->apiKey = $api_key;
-        $this->options = [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $api_key,
-                'Content-Type'  => 'application/json',
-            ],
-        ];
     }
 
     /**
@@ -43,8 +36,6 @@ class SendgridTransport extends Transport
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
         $this->beforeSendPerformed($message);
-
-        $payload = $this->options;
 
         $data = [
             'personalizations' => $this->getPersonalizations($message),
@@ -64,9 +55,13 @@ class SendgridTransport extends Transport
 
         $data = $this->setParameters($message, $data);
 
-        $payload['json'] = $data;
-
-        array_set($payload, 'headers.Authorization', 'Bearer ' . $this->apiKey);
+        $payload = [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $data,
+        ];
 
         $response = $this->post($payload);
 
