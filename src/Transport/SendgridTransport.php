@@ -50,8 +50,11 @@ class SendgridTransport extends Transport
             'personalizations' => $this->getPersonalizations($message),
             'from'             => $this->getFrom($message),
             'subject'          => $message->getSubject(),
-            'content'          => $this->getContents($message),
         ];
+
+        if ($contents = $this->getContents($message)) {
+            $data['content'] = $contents;
+        }
 
         if ($reply_to = $this->getReplyTo($message)) {
             $data['reply_to'] = $reply_to;
@@ -185,6 +188,11 @@ class SendgridTransport extends Transport
                 ];
             }
         }
+
+        if (is_null($message->getBody())) {
+            return null;
+        }
+
         $content[] = [
             'type'  => 'text/html',
             'value' => $message->getBody(),
