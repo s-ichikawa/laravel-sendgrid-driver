@@ -174,3 +174,24 @@ class SendGridSample extends Mailable
 }
 ```
 
+## Using Template Id
+
+Illuminate\Mailer has generally required a view file.
+But in case of using template id, set an empty array at view function.
+```php
+\Mail::send([], [], function (Message $message) {
+    $message
+        ->to('to@example.com')
+        ->embedData([
+            'personalizations' => [
+                [
+                    'dynamic_template_data' => [
+                        'title' => 'Subject',
+                        'name' => 's-ichikawa',
+                    ],
+                ],
+            ],
+            'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
+        ], SendgridTransport::SMTP_API_NAME);
+});
+```

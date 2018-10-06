@@ -20,7 +20,6 @@ class SendgridTransport extends Transport
      * @var Client
      */
     private $client;
-    private $options;
     private $attachments;
     private $numberOfRecipients;
     private $apiKey;
@@ -29,12 +28,6 @@ class SendgridTransport extends Transport
     {
         $this->client = $client;
         $this->apiKey = $api_key;
-        $this->options = [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $api_key,
-                'Content-Type'  => 'application/json',
-            ],
-        ];
     }
 
     /**
@@ -44,14 +37,15 @@ class SendgridTransport extends Transport
     {
         $this->beforeSendPerformed($message);
 
-        $payload = $this->options;
-
         $data = [
             'personalizations' => $this->getPersonalizations($message),
             'from'             => $this->getFrom($message),
             'subject'          => $message->getSubject(),
-            'content'          => $this->getContents($message),
         ];
+
+        if ($contents = $this->getContents($message)) {
+            $data['content'] = $contents;
+        }
 
         if ($reply_to = $this->getReplyTo($message)) {
             $data['reply_to'] = $reply_to;
@@ -64,9 +58,13 @@ class SendgridTransport extends Transport
 
         $data = $this->setParameters($message, $data);
 
-        $payload['json'] = $data;
-
-        array_set($payload, 'headers.Authorization', 'Bearer ' . $this->apiKey);
+        $payload = [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $data,
+        ];
 
         $response = $this->post($payload);
 
@@ -185,6 +183,11 @@ class SendgridTransport extends Transport
                 ];
             }
         }
+
+        if (is_null($message->getBody())) {
+            return null;
+        }
+
         $content[] = [
             'type'  => 'text/html',
             'value' => $message->getBody(),
