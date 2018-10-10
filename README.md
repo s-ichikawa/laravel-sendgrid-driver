@@ -187,7 +187,7 @@ But in case of using template id, set an empty array at view function.
                 [
                     'dynamic_template_data' => [
                         'title' => 'Subject',
-                        'name' => 's-ichikawa',
+                        'name'  => 's-ichikawa',
                     ],
                 ],
             ],
