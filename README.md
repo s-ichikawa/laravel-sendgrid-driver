@@ -95,7 +95,7 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
         ->from('bar@example.com', 'bar_name')
         ->embedData([
             'categories' => ['user_group1'],
-            'send_at' => $send_at->getTimestamp(),
+            'send_at'    => $send_at->getTimestamp(),
         ], 'sendgrid/x-smtpapi');
 });
 ```
@@ -117,7 +117,7 @@ https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body
                 [
                     'to' => [
                         'email' => 'user1@example.com',
-                        'name' => 'user1',
+                        'name'  => 'user1',
                     ],
                     'substitutions' => [
                         '-email-' => 'user1@example.com',
@@ -126,7 +126,7 @@ https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body
                 [
                     'to' => [
                         'email' => 'user2@example.com',
-                        'name' => 'user2',
+                        'name'  => 'user2',
                     ],
                     'substitutions' => [
                         '-email-' => 'user2@example.com',
@@ -187,7 +187,7 @@ But in case of using template id, set an empty array at view function.
                 [
                     'dynamic_template_data' => [
                         'title' => 'Subject',
-                        'name' => 's-ichikawa',
+                        'name'  => 's-ichikawa',
                     ],
                 ],
             ],
