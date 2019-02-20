@@ -46,7 +46,7 @@ Add the package to your composer.json and run composer update.
 ```
 
 or installed with composer
-```
+```bash
 $ composer require s-ichikawa/laravel-sendgrid-driver
 ```
 
@@ -61,7 +61,7 @@ unset($app->availableBindings['mailer']);
 
 Create mail config files.
 config/mail.php
-```
+```php
 <?php
 return [
     'driver' => env('MAIL_DRIVER', 'sendgrid'),
@@ -77,7 +77,7 @@ SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
 ```
 
 config/services.php (In using lumen, require creating config directory and file.)
-```
+```php
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY'),
     ],
@@ -88,7 +88,7 @@ config/services.php (In using lumen, require creating config directory and file.
 Every request made to /v3/mail/send will require a request body formatted in JSON containing your email’s content and metadata.
 Required parameters are set by Laravel's usually mail sending, but you can also use useful features like "categories" and "send_at".
 
-```
+```php
 \Mail::send('view', $data, function (Message $message) {
     $message
         ->to('foo@example.com', 'foo_name')
@@ -106,7 +106,7 @@ https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body
 
 ## API v3
 
-```
+```php
 \Mail::send('view', $data, function (Message $message) {
     $message
         ->to('foo@example.com', 'foo_name')
