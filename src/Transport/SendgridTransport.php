@@ -5,6 +5,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Mail\Transport\Transport;
+use Sichikawa\LaravelSendgridDriver\SendGrid;
 use Swift_Attachment;
 use Swift_Image;
 use Swift_Mime_SimpleMessage;
@@ -12,6 +13,10 @@ use Swift_MimePart;
 
 class SendgridTransport extends Transport
 {
+    use SendGrid {
+        sgDecode as decode;
+    }
+
     const MAXIMUM_FILE_SIZE = 7340032;
     const SMTP_API_NAME = 'sendgrid/x-smtpapi';
     const BASE_URL = 'https://api.sendgrid.com/v3/mail/send';
@@ -239,7 +244,7 @@ class SendgridTransport extends Transport
             ) {
                 continue;
             }
-            $smtp_api = $attachment->getBody();
+            $smtp_api = self::decode($attachment->getBody());
         }
 
         if (!is_array($smtp_api)) {

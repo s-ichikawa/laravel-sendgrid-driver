@@ -179,6 +179,7 @@ class SendGridSample extends Mailable
 Illuminate\Mailer has generally required a view file.
 But in case of using template id, set an empty array at view function.
 ```php
+<?
 \Mail::send([], [], function (Message $message) {
     $message
         ->to('to@example.com')
@@ -193,5 +194,23 @@ But in case of using template id, set an empty array at view function.
             ],
             'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
         ], SendgridTransport::SMTP_API_NAME);
+});
+```
+
+## Using with Telescope
+
+In case [telescope](https://laravel.com/docs/5.7/telescope) is active and set array to first variable in embedData, telescope's watcher happen error in encoding.
+In ordar to avoid this probrem, you can use sgEncode function.
+```php
+<?
+use Sichikawa\LaravelSendgridDriver\SendGrid;
+
+\Mail::send('view', $data, function (Message $message) {
+    $message
+        ->to('foo@example.com', 'foo_name')
+        ->from('bar@example.com', 'bar_name')
+        ->embedData(sgEncode([
+            'categories' => ['user_group1'],
+        ]), 'sendgrid/x-smtpapi');
 });
 ```

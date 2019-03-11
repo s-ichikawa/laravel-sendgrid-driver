@@ -22,7 +22,7 @@ class SendgridTransportTest extends TestCase
     public function testSend()
     {
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('to@sink.sendgrid.net', 'test_to');
         $res = $this->transport->send($message->getSwiftMessage());
         $this->assertEquals(1, $res);
@@ -42,7 +42,7 @@ class SendgridTransportTest extends TestCase
                 'X-Message-ID' => $messageId
             ]));
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('to@sink.sendgrid.net', 'test_to');
         $transport->send($message->getSwiftMessage());
         $this->assertEquals($messageId, $message->getSwiftMessage()->getHeaders()->get('X-Message-ID')->getFieldBody());
@@ -51,7 +51,7 @@ class SendgridTransportTest extends TestCase
     public function testMultipleSend()
     {
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('foo@sink.sendgrid.net', 'foo')
             ->cc('foo2@sink.sendgrid.net', 'foo2');
         $res = $this->transport->send($message->getSwiftMessage());
@@ -59,7 +59,7 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals(2, $res);
 
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('bar@sink.sendgrid.net', 'bar')
             ->bcc('bar2@sink.sendgrid.net', 'bar2');
         $res = $this->transport->send($message->getSwiftMessage());
@@ -70,7 +70,7 @@ class SendgridTransportTest extends TestCase
     public function testSendByPersonalization()
     {
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('dummy@sink.sendgrid.net')
             ->embedData([
                 'personalizations' => [
@@ -87,7 +87,7 @@ class SendgridTransportTest extends TestCase
         $this->assertEquals(1, $res);
 
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('dummy@sink.sendgrid.net')
             ->embedData([
                 'personalizations' => [
@@ -273,7 +273,7 @@ class SendgridTransportTest extends TestCase
         $transport = new SendgridTransport($client, 'This is the wrong value');
 
         $message = new Message($this->getMessage());
-        $message->from('from@sink.sendgrid.net', 'test_from')
+        $message->from('from@google.com', 'test_from')
             ->to('to@sink.sendgrid.net', 'test_to')
             ->embedData([
                 'api_key' => $this->api_key,
