@@ -28,11 +28,13 @@ class SendgridTransport extends Transport
     private $attachments;
     private $numberOfRecipients;
     private $apiKey;
+    private $endpoint;
 
-    public function __construct(ClientInterface $client, $api_key)
+    public function __construct(ClientInterface $client, $api_key, $endpoint = self::BASE_URL)
     {
         $this->client = $client;
         $this->apiKey = $api_key;
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -305,6 +307,6 @@ class SendgridTransport extends Transport
      */
     private function post($payload)
     {
-        return $this->client->post('https://api.sendgrid.com/v3/mail/send', $payload);
+        return $this->client->post($this->endpoint, $payload);
     }
 }
