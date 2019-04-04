@@ -30,11 +30,11 @@ class SendgridTransport extends Transport
     private $apiKey;
     private $endpoint;
 
-    public function __construct(ClientInterface $client, $api_key, $endpoint = self::BASE_URL)
+    public function __construct(ClientInterface $client, $api_key, $endpoint = null)
     {
         $this->client = $client;
         $this->apiKey = $api_key;
-        $this->endpoint = $endpoint;
+        $this->endpoint = isset($endpoint) ? $endpoint : self::BASE_URL;
     }
 
     /**
