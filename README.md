@@ -30,6 +30,7 @@ $ composer require s-ichikawa/laravel-sendgrid-driver
 ```
 
 Add the sendgrid service provider in config/app.php:
+(Laravel 5.5+ uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.)
 ```php
 'providers' => [
     Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class
