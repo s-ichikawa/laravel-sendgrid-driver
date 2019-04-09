@@ -84,6 +84,16 @@ config/services.php (In using lumen, require creating config directory and file.
     ],
 ```
 
+### endpoint config
+If you need to set custom endpoint, you can set any endpoint by using `endpoint` key.
+For example, calls to SendGrid API through a proxy, call endpoint for confirming a request.
+```php
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY'),
+        'endpoint' => 'https://custom.example.com/send',
+    ],
+```
+
 ## Request Body Parameters
 
 Every request made to /v3/mail/send will require a request body formatted in JSON containing your email’s content and metadata.
