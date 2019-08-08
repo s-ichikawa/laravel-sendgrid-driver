@@ -2,6 +2,7 @@
 
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Mail\Message;
+use Illuminate\Support\Arr;
 use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
 
 class SendgridTransportTest extends TestCase
@@ -148,12 +149,12 @@ class SendgridTransportTest extends TestCase
 
         $res = $getPersonalizations($message);
 
-        $this->assertEquals($to, array_get($res, '0.to.0.email'));
-        $this->assertEquals($to_name, array_get($res, '0.to.0.name'));
-        $this->assertEquals($cc, array_get($res, '0.cc.0.email'));
-        $this->assertEquals($cc_name, array_get($res, '0.cc.0.name'));
-        $this->assertEquals($bcc, array_get($res, '0.bcc.0.email'));
-        $this->assertEquals($bcc_name, array_get($res, '0.bcc.0.name'));
+        $this->assertEquals($to, Arr::get($res, '0.to.0.email'));
+        $this->assertEquals($to_name, Arr::get($res, '0.to.0.name'));
+        $this->assertEquals($cc, Arr::get($res, '0.cc.0.email'));
+        $this->assertEquals($cc_name, Arr::get($res, '0.cc.0.name'));
+        $this->assertEquals($bcc, Arr::get($res, '0.bcc.0.email'));
+        $this->assertEquals($bcc_name, Arr::get($res, '0.bcc.0.name'));
     }
 
     public function testGetContents()
@@ -168,10 +169,10 @@ class SendgridTransportTest extends TestCase
         )]);
 
         $res = $getContents($message->getSwiftMessage());
-        $this->assertEquals('text/plain', array_get($res, '0.type'));
-        $this->assertEquals('This is a test.', array_get($res, '0.value'));
-        $this->assertEquals('text/html', array_get($res, '1.type'));
-        $this->assertEquals('Test body.', array_get($res, '1.value'));
+        $this->assertEquals('text/plain', Arr::get($res, '0.type'));
+        $this->assertEquals('This is a test.', Arr::get($res, '0.value'));
+        $this->assertEquals('text/html', Arr::get($res, '1.type'));
+        $this->assertEquals('Test body.', Arr::get($res, '1.value'));
     }
 
     public function testGetAttachments()
@@ -186,8 +187,8 @@ class SendgridTransportTest extends TestCase
         $message->attach($file);
 
         $res = $getAttachment($message->getSwiftMessage());
-        $this->assertEquals(base64_encode(file_get_contents($file)), array_get($res, '0.content'));
-        $this->assertEquals('test.png', array_get($res, '0.filename'));
+        $this->assertEquals(base64_encode(file_get_contents($file)), Arr::get($res, '0.content'));
+        $this->assertEquals('test.png', Arr::get($res, '0.filename'));
     }
 
     public function testSetParameters()
@@ -284,7 +285,7 @@ class SendgridTransportTest extends TestCase
         $transport->send($message->getSwiftMessage());
 
         /** @var \GuzzleHttp\Psr7\Request $request */
-        $request = array_get($container, '0.request');
+        $request = Arr::get($container, '0.request');
         $this->assertEquals('Bearer ' . $this->api_key, $request->getHeaderLine('Authorization'));
         $this->assertNotContains('"api_key":', (string)$request->getBody());
     }

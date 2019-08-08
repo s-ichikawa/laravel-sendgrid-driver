@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Arr;
+
 class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -48,7 +50,7 @@ class MockConfig implements ArrayAccess, Illuminate\Contracts\Config\Repository
      */
     public function get($key, $default = null)
     {
-        return array_get($this->item, $key, $default);
+        return Arr::get($this->item, $key, $default);
     }
 
     /**
