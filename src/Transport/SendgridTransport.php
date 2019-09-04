@@ -5,6 +5,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Mail\Transport\Transport;
+use Illuminate\Support\Arr;
 use Sichikawa\LaravelSendgridDriver\SendGrid;
 use Swift_Attachment;
 use Swift_Image;
@@ -282,7 +283,7 @@ class SendgridTransport extends Transport
 
             }
 
-            array_set($data, $key, $val);
+            Arr::set($data, $key, $val);
         }
         return $data;
     }
@@ -292,10 +293,10 @@ class SendgridTransport extends Transport
         foreach ($personalizations as $index => $params) {
             foreach ($params as $key => $val) {
                 if (in_array($key, ['to', 'cc', 'bcc'])) {
-                    array_set($data, 'personalizations.' . $index . '.' . $key, [$val]);
+                    Arr::set($data, 'personalizations.' . $index . '.' . $key, [$val]);
                     ++$this->numberOfRecipients;
                 } else {
-                    array_set($data, 'personalizations.' . $index . '.' . $key, $val);
+                    Arr::set($data, 'personalizations.' . $index . '.' . $key, $val);
                 }
             }
         }
