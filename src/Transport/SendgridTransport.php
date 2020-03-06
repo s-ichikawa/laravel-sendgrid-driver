@@ -3,9 +3,11 @@ namespace Sichikawa\LaravelSendgridDriver\Transport;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Mail\Transport\Transport;
 use Illuminate\Support\Arr;
+use Psr\Http\Message\ResponseInterface;
 use Sichikawa\LaravelSendgridDriver\SendGrid;
 use Swift_Attachment;
 use Swift_Image;
@@ -76,18 +78,11 @@ class SendgridTransport extends Transport
 
         $response = $this->post($payload);
 
-        if (method_exists($response, 'getHeaderLine')) {
-            $message->getHeaders()->addTextHeader('X-Message-Id', $response->getHeaderLine('X-Message-Id'));
-        }
+        $message->getHeaders()->addTextHeader('X-Sendgrid-Message-Id', $response->getHeaderLine('X-Message-Id'));
 
-        if (is_callable([$this, "sendPerformed"])) {
-            $this->sendPerformed($message);
-        }
+        $this->sendPerformed($message);
 
-        if (is_callable([$this, "numberOfRecipients"])) {
-            return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
-        }
-        return $response;
+        return $this->numberOfRecipients ?: $this->numberOfRecipients($message);
     }
 
     /**
@@ -304,10 +299,11 @@ class SendgridTransport extends Transport
 
     /**
      * @param $payload
-     * @return Response
+     * @return ResponseInterface
+     * @throws GuzzleException
      */
     private function post($payload)
     {
-        return $this->client->post($this->endpoint, $payload);
+        return $this->client->request('POST', $this->endpoint, $payload);
     }
 }

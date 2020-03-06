@@ -2,7 +2,7 @@
 namespace Sichikawa\LaravelSendgridDriver;
 
 use GuzzleHttp\Client as HttpClient;
-use Illuminate\Mail\TransportManager;
+use Illuminate\Mail\MailManager;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
@@ -16,19 +16,15 @@ class SendgridTransportServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->afterResolving(TransportManager::class, function(TransportManager $manager) {
-            $this->extendTransportManager($manager);
-        });
-    }
+        $this->app->afterResolving(MailManager::class, function ($mail_manager) {
+            /** @var $mail_manager MailManager */
+            $mail_manager->extend("sendgrid", function($config){
+                $client = new HttpClient(Arr::get($config, 'guzzle', []));
+                $endpoint = isset($config['endpoint']) ? $config['endpoint'] : null;
 
-    public function extendTransportManager(TransportManager $manager)
-    {
-        $manager->extend('sendgrid', function() {
-            $config = $this->app['config']->get('services.sendgrid', array());
-            $client = new HttpClient(Arr::get($config, 'guzzle', []));
-            $endpoint = isset($config['endpoint']) ? $config['endpoint'] : null;
+                return new SendgridTransport($client, $config['api_key'], $endpoint);
+            });
 
-            return new SendgridTransport($client, $config['api_key'], $endpoint);
         });
     }
 }

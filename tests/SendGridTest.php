@@ -7,7 +7,7 @@
  */
 
 
-class SendGridTest extends PHPUnit_Framework_TestCase
+class SendGridTest extends \PHPUnit\Framework\TestCase
 {
     use \Sichikawa\LaravelSendgridDriver\SendGrid;
 
