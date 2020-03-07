@@ -20,7 +20,7 @@ But the old version has [security issues](https://github.com/guzzle/guzzle/relea
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "~2.0"
+    "s-ichikawa/laravel-sendgrid-driver": "~3.0"
 },
 ```
 
@@ -81,6 +81,15 @@ config/services.php (In using lumen, require creating config directory and file.
 ```php
     'sendgrid' => [
         'api_key' => env('SENDGRID_API_KEY'),
+    ],
+```
+
+config/mail.php
+```php
+    'mailers' => [
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+        ],
     ],
 ```
 
