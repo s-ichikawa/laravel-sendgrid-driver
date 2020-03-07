@@ -4,7 +4,6 @@ namespace Sichikawa\LaravelSendgridDriver\Transport;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Mail\Transport\Transport;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ResponseInterface;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Sichikawa\LaravelSendgridDriver;
 
 use GuzzleHttp\Client as HttpClient;
@@ -16,9 +17,8 @@ class SendgridTransportServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->afterResolving(MailManager::class, function ($mail_manager) {
-            /** @var $mail_manager MailManager */
-            $mail_manager->extend("sendgrid", function($config){
+        $this->app->afterResolving(MailManager::class, function (MailManager $mail_manager) {
+            $mail_manager->extend("sendgrid", function ($config) {
                 $client = new HttpClient(Arr::get($config, 'guzzle', []));
                 $endpoint = isset($config['endpoint']) ? $config['endpoint'] : null;
 
