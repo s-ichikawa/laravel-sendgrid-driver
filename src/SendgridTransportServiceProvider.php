@@ -19,6 +19,9 @@ class SendgridTransportServiceProvider extends ServiceProvider
     {
         $this->app->afterResolving(MailManager::class, function (MailManager $mail_manager) {
             $mail_manager->extend("sendgrid", function ($config) {
+                if (! isset($config['api_key'])) {
+                    $config = $this->app['config']->get('services.sendgrid', []);
+                }
                 $client = new HttpClient(Arr::get($config, 'guzzle', []));
                 $endpoint = isset($config['endpoint']) ? $config['endpoint'] : null;
 
