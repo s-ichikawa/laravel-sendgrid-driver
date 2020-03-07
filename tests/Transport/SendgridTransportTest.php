@@ -12,7 +12,7 @@ class SendgridTransportTest extends TestCase
      */
     protected $transport;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $client = new HttpClient();
@@ -32,21 +32,21 @@ class SendgridTransportTest extends TestCase
     public function testXMessageID()
     {
         $client = $this->getMockBuilder(\GuzzleHttp\Client::class)
-            ->setMethods(['post'])
+            ->onlyMethods(['request'])
             ->getMock();
         $transport = new SendgridTransport($client, $this->api_key);
 
         $messageId = str_random(32);
         $client->expects($this->once())
-            ->method('post')
+            ->method('request')
             ->willReturn(new \GuzzleHttp\Psr7\Response(200, [
-                'X-Message-ID' => $messageId
+                'X-Message-ID' => $messageId,
             ]));
         $message = new Message($this->getMessage());
         $message->from('from@google.com', 'test_from')
             ->to('to@sink.sendgrid.net', 'test_to');
         $transport->send($message->getSwiftMessage());
-        $this->assertEquals($messageId, $message->getSwiftMessage()->getHeaders()->get('X-Message-ID')->getFieldBody());
+        $this->assertEquals($messageId, $message->getSwiftMessage()->getHeaders()->get('X-Sendgrid-Message-ID')->getFieldBody());
     }
 
     public function testMultipleSend()
@@ -78,7 +78,7 @@ class SendgridTransportTest extends TestCase
                     [
                         'to' => [
                             'email' => 'foo@sink.sendgrid.net',
-                            'name'  => 'foo',
+                            'name' => 'foo',
                         ],
                     ],
                 ],
@@ -95,28 +95,28 @@ class SendgridTransportTest extends TestCase
                     [
                         'to' => [
                             'email' => 'to1@sink.sendgrid.net',
-                            'name'  => 'to1',
+                            'name' => 'to1',
                         ],
                     ],
                     [
                         'to' => [
                             'email' => 'to2@sink.sendgrid.net',
-                            'name'  => 'to2',
+                            'name' => 'to2',
                         ],
                         'cc' => [
                             'email' => 'cc1@sink.sendgrid.net',
-                            'name'  => 'cc1',
-                        ]
+                            'name' => 'cc1',
+                        ],
                     ],
                     [
                         'to' => [
                             'email' => 'to3@sink.sendgrid.net',
-                            'name'  => 'to3',
+                            'name' => 'to3',
                         ],
                         'bcc' => [
                             'email' => 'bcc1@sink.sendgrid.net',
-                            'name'  => 'bcc1',
-                        ]
+                            'name' => 'bcc1',
+                        ],
                     ],
                 ],
             ], 'sendgrid/x-smtpapi');
@@ -218,10 +218,10 @@ class SendgridTransportTest extends TestCase
                 'substitutions' => [
                     'substitutions_key' => 'substitutions_value',
                 ],
-                'custom_args'   => [
+                'custom_args' => [
                     'custom_args_key' => 'custom_args_value',
                 ],
-                'send_at'       => time(),
+                'send_at' => time(),
             ],
         ];
 
@@ -287,7 +287,7 @@ class SendgridTransportTest extends TestCase
         /** @var \GuzzleHttp\Psr7\Request $request */
         $request = Arr::get($container, '0.request');
         $this->assertEquals('Bearer ' . $this->api_key, $request->getHeaderLine('Authorization'));
-        $this->assertNotContains('"api_key":', (string)$request->getBody());
+        $this->assertStringNotContainsString('"api_key":', (string)$request->getBody());
     }
 
     /**
