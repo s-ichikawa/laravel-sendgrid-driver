@@ -5,15 +5,15 @@
     "license": "MIT",
     "require": {
         "illuminate/mail": ">=7.0",
-        "guzzlehttp/guzzle": "^6.3 || ^7.0",
-        "phpoption/phpoption": "^1.7",
-        "vlucas/phpdotenv": "^4.1"
+        "illuminate/support": ">=7.0",
+        "guzzlehttp/guzzle": "^6.3 || ^7.0"
     },
     "require-dev": {
         "illuminate/container": ">=7.0",
         "illuminate/filesystem": ">=7.0",
         "phpunit/phpunit": "^8.5",
-        "laravel/helpers": "^1.2"
+        "laravel/helpers": "^1.2",
+        "vlucas/phpdotenv": "^4.1"
     },
     "autoload": {
         "psr-4": {
