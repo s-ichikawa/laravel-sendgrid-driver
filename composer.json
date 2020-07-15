@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "illuminate/mail": ">=7.0",
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "^6.3 || ^7.0",
         "phpoption/phpoption": "^1.7",
         "vlucas/phpdotenv": "^4.1"
     },
