@@ -75,6 +75,8 @@ return [
 ```
 MAIL_DRIVER=sendgrid
 SENDGRID_API_KEY='YOUR_SENDGRID_API_KEY'
+# Optional: for 7+ laravel projects
+MAIL_MAILER=sendgrid 
 ```
 
 config/services.php (In using lumen, require creating config directory and file.)
