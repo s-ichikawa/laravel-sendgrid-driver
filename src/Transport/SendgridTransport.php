@@ -19,7 +19,6 @@ class SendgridTransport extends Transport
         sgDecode as decode;
     }
 
-    const MAXIMUM_FILE_SIZE = 7340032;
     const SMTP_API_NAME = 'sendgrid/x-smtpapi';
     const BASE_URL = 'https://api.sendgrid.com/v3/mail/send';
 
@@ -207,7 +206,6 @@ class SendgridTransport extends Transport
         foreach ($message->getChildren() as $attachment) {
             if ((!$attachment instanceof Swift_Attachment && !$attachment instanceof Swift_Image)
                 || $attachment->getFilename() === self::SMTP_API_NAME
-                || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE
             ) {
                 continue;
             }
