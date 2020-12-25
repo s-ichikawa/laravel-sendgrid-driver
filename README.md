@@ -48,7 +48,7 @@ Add the package to your composer.json and run composer update.
 
 or installed with composer
 ```bash
-$ composer require s-ichikawa/laravel-sendgrid-driver
+$ composer require "s-ichikawa/laravel-sendgrid-driver:~2.0"
 ```
 
 Add the sendgrid service provider in bootstrap/app.php
