@@ -10,7 +10,6 @@ use Swift_MimePart;
 
 class SendgridTransport extends Transport
 {
-    const MAXIMUM_FILE_SIZE = 7340032;
     const SMTP_API_NAME = 'sendgrid/x-smtpapi';
 
     private $client;
@@ -143,7 +142,7 @@ class SendgridTransport extends Transport
     protected function setAttachment(&$data, Swift_Mime_Message $message)
     {
         foreach ($message->getChildren() as $attachment) {
-            if (!$attachment instanceof Swift_Attachment || !strlen($attachment->getBody()) > self::MAXIMUM_FILE_SIZE) {
+            if (!$attachment instanceof Swift_Attachment) {
                 continue;
             }
             $handler = tmpfile();
