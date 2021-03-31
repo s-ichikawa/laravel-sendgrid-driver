@@ -13,7 +13,7 @@
         "illuminate/filesystem": ">=7.0",
         "phpunit/phpunit": "^8.5",
         "laravel/helpers": "^1.2",
-        "vlucas/phpdotenv": "^4.1"
+        "vlucas/phpdotenv": "^4.1 || ^5.2"
     },
     "autoload": {
         "psr-4": {
