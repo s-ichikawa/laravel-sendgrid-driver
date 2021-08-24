@@ -3,6 +3,7 @@
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
 
 class SendgridTransportTest extends TestCase
@@ -36,7 +37,7 @@ class SendgridTransportTest extends TestCase
             ->getMock();
         $transport = new SendgridTransport($client, $this->api_key);
 
-        $messageId = str_random(32);
+        $messageId = Str::random(32);
         $client->expects($this->once())
             ->method('request')
             ->willReturn(new \GuzzleHttp\Psr7\Response(200, [
