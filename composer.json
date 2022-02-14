@@ -4,16 +4,16 @@
     "keywords": ["laravel", "sendgrid"],
     "license": "MIT",
     "require": {
-        "illuminate/mail": ">=7.0",
-        "illuminate/support": ">=7.0",
-        "guzzlehttp/guzzle": "^6.3 || ^7.0"
+        "illuminate/mail": "^9.0",
+        "illuminate/support": "^9.0",
+        "guzzlehttp/guzzle": "^7.2"
     },
     "require-dev": {
-        "illuminate/container": ">=7.0",
-        "illuminate/filesystem": ">=7.0",
-        "phpunit/phpunit": "^8.5",
+        "illuminate/container": "^9.0",
+        "illuminate/filesystem": "^9.0",
+        "phpunit/phpunit": "^9.5.8",
         "laravel/helpers": "^1.2",
-        "vlucas/phpdotenv": "^4.1 || ^5.2"
+        "vlucas/phpdotenv": "^5.4.1"
     },
     "autoload": {
         "psr-4": {
@@ -43,5 +43,7 @@
                 "Sichikawa\\LaravelSendgridDriver\\SendgridTransportServiceProvider"
             ]
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

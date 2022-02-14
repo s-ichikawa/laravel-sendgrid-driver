@@ -3,9 +3,8 @@
 namespace Sichikawa\LaravelSendgridDriver;
 
 use Illuminate\Mail\Mailable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
-use Swift_Message;
+use Symfony\Component\Mime\Email;
 
 trait SendGrid
 {
@@ -16,9 +15,9 @@ trait SendGrid
      */
     public function sendgrid($params)
     {
-        if (($this instanceof Mailable || $this instanceof MailMessage) && $this->mailDriver() == "sendgrid") {
-            $this->withSwiftMessage(function (Swift_Message $message) use ($params) {
-                $message->embed(new \Swift_Image(static::sgEncode($params), SendgridTransport::SMTP_API_NAME));
+        if (($this instanceof Mailable) && $this->mailDriver() == "sendgrid") {
+            $this->withSymfonyMessage(function (Email $email) use ($params) {
+                $email->embed(static::sgEncode($params), SendgridTransport::REQUEST_BODY_PARAMETER);
             });
         }
         return $this;
@@ -51,7 +50,7 @@ trait SendGrid
     public static function sgDecode($strParams)
     {
         if (!is_string($strParams)) {
-            return (array) $strParams;
+            return (array)$strParams;
         }
         $params = json_decode($strParams, true);
         return is_array($params) ? $params : [];

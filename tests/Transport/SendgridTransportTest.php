@@ -1,301 +1,200 @@
 <?php
 
-use GuzzleHttp\Client as HttpClient;
-use Illuminate\Mail\Message;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
+namespace Transport;
 
-class SendgridTransportTest extends TestCase
+use GuzzleHttp\Client;
+use Sichikawa\LaravelSendgridDriver\SendGrid;
+use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\TextPart;
+
+class SendgridTransportTest extends \TestCase
 {
-    /**
-     * @var SendgridTransport
-     */
-    protected $transport;
+    use SendGrid;
+
+    protected SendgridTransport $transport;
+    private \ReflectionClass $reflection;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $client = new HttpClient();
+        $client = new Client();
         $this->transport = new SendgridTransport($client, $this->api_key);
-    }
-
-
-    public function testSend()
-    {
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('to@sink.sendgrid.net', 'test_to');
-        $res = $this->transport->send($message->getSwiftMessage());
-        $this->assertEquals(1, $res);
-    }
-
-    public function testXMessageID()
-    {
-        $client = $this->getMockBuilder(\GuzzleHttp\Client::class)
-            ->onlyMethods(['request'])
-            ->getMock();
-        $transport = new SendgridTransport($client, $this->api_key);
-
-        $messageId = Str::random(32);
-        $client->expects($this->once())
-            ->method('request')
-            ->willReturn(new \GuzzleHttp\Psr7\Response(200, [
-                'X-Message-ID' => $messageId,
-            ]));
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('to@sink.sendgrid.net', 'test_to');
-        $transport->send($message->getSwiftMessage());
-        $this->assertEquals($messageId, $message->getSwiftMessage()->getHeaders()->get('X-Sendgrid-Message-ID')->getFieldBody());
-    }
-
-    public function testMultipleSend()
-    {
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('foo@sink.sendgrid.net', 'foo')
-            ->cc('foo2@sink.sendgrid.net', 'foo2');
-        $res = $this->transport->send($message->getSwiftMessage());
-
-        $this->assertEquals(2, $res);
-
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('bar@sink.sendgrid.net', 'bar')
-            ->bcc('bar2@sink.sendgrid.net', 'bar2');
-        $res = $this->transport->send($message->getSwiftMessage());
-
-        $this->assertEquals(2, $res);
-    }
-
-    public function testSendByPersonalization()
-    {
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('dummy@sink.sendgrid.net')
-            ->embedData([
-                'personalizations' => [
-                    [
-                        'to' => [
-                            'email' => 'foo@sink.sendgrid.net',
-                            'name' => 'foo',
-                        ],
-                    ],
-                ],
-            ], 'sendgrid/x-smtpapi');
-        $res = $this->transport->send($message->getSwiftMessage());
-
-        $this->assertEquals(1, $res);
-
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('dummy@sink.sendgrid.net')
-            ->embedData([
-                'personalizations' => [
-                    [
-                        'to' => [
-                            'email' => 'to1@sink.sendgrid.net',
-                            'name' => 'to1',
-                        ],
-                    ],
-                    [
-                        'to' => [
-                            'email' => 'to2@sink.sendgrid.net',
-                            'name' => 'to2',
-                        ],
-                        'cc' => [
-                            'email' => 'cc1@sink.sendgrid.net',
-                            'name' => 'cc1',
-                        ],
-                    ],
-                    [
-                        'to' => [
-                            'email' => 'to3@sink.sendgrid.net',
-                            'name' => 'to3',
-                        ],
-                        'bcc' => [
-                            'email' => 'bcc1@sink.sendgrid.net',
-                            'name' => 'bcc1',
-                        ],
-                    ],
-                ],
-            ], 'sendgrid/x-smtpapi');
-        $res = $this->transport->send($message->getSwiftMessage());
-
-        $this->assertEquals(5, $res);
+        $this->reflection = new \ReflectionClass($this->transport);
     }
 
     public function testGetPersonalizations()
     {
+        $email = (new Email())
+            ->to(
+                (new Address('to1@sink.sendgrid.net', 'test_to1')),
+                (new Address('to2@sink.sendgrid.net', 'test_to2')),
+            )
+            ->cc(
+                (new Address('cc1@sink.sendgrid.net', 'test_cc1')),
+                (new Address('cc2@sink.sendgrid.net', 'test_cc2')),
+            )
+            ->bcc(
+                (new Address('bcc1@sink.sendgrid.net', 'test_bcc1')),
+                (new Address('bcc2@sink.sendgrid.net', 'test_bcc2')),
+            );
 
+        $method = $this->reflection->getMethod('getPersonalizations');
+        $method->setAccessible(true);
 
-        $getPersonalizations = \Closure::bind(function ($message) {
-            return $this->getPersonalizations($message);
-        }, $this->transport, SendgridTransport::class);
-
-        $message = $this->getMessage();
-
-        $to = 'to_user@exsample.com';
-        $to_name = 'to_user';
-        $message->setTo($to, $to_name);
-
-        $cc = 'cc_user@exsample.com';
-        $cc_name = 'cc_user';
-        $message->setCc($cc, $cc_name);
-
-        $bcc = 'bcc_user@exsample.com';
-        $bcc_name = 'bcc_user';
-        $message->setBcc($bcc, $bcc_name);
-
-        $res = $getPersonalizations($message);
-
-        $this->assertEquals($to, Arr::get($res, '0.to.0.email'));
-        $this->assertEquals($to_name, Arr::get($res, '0.to.0.name'));
-        $this->assertEquals($cc, Arr::get($res, '0.cc.0.email'));
-        $this->assertEquals($cc_name, Arr::get($res, '0.cc.0.name'));
-        $this->assertEquals($bcc, Arr::get($res, '0.bcc.0.email'));
-        $this->assertEquals($bcc_name, Arr::get($res, '0.bcc.0.name'));
-    }
-
-    public function testGetContents()
-    {
-        $getContents = \Closure::bind(function ($message) {
-            return $this->getContents($message);
-        }, $this->transport, SendgridTransport::class);
-
-        $message = new Message($this->getMessage());
-        $message->getSwiftMessage()->setChildren([new Swift_MimePart(
-            'This is a test.'
-        )]);
-
-        $res = $getContents($message->getSwiftMessage());
-        $this->assertEquals('text/plain', Arr::get($res, '0.type'));
-        $this->assertEquals('This is a test.', Arr::get($res, '0.value'));
-        $this->assertEquals('text/html', Arr::get($res, '1.type'));
-        $this->assertEquals('Test body.', Arr::get($res, '1.value'));
-    }
-
-    public function testGetAttachments()
-    {
-        $getAttachment = \Closure::bind(function ($message) {
-            return $this->getAttachments($message);
-        }, $this->transport, SendgridTransport::class);
-
-        $message = new Message($this->getMessage());
-
-        $file = __DIR__ . '/test.png';
-        $message->attach($file);
-
-        $res = $getAttachment($message->getSwiftMessage());
-        $this->assertEquals(base64_encode(file_get_contents($file)), Arr::get($res, '0.content'));
-        $this->assertEquals('test.png', Arr::get($res, '0.filename'));
-    }
-
-    public function testSetParameters()
-    {
-        $setParameters = \Closure::bind(function ($message, $data) {
-            return $this->setParameters($message, $data);
-        }, $this->transport, SendgridTransport::class);
-
-        $parameters = [
-            'categories' => 'category1',
-        ];
-        $message = new Message($this->getMessage());
-        $message->embedData($parameters, 'sendgrid/x-smtpapi');
-        $data = [];
-        $data = $setParameters($message->getSwiftMessage(), $data);
-        $this->assertEquals($parameters, $data);
-    }
-
-    public function testSetPersonalizations()
-    {
-        $setParameters = \Closure::bind(function ($message, $data) {
-            return $this->setParameters($message, $data);
-        }, $this->transport, SendgridTransport::class);
-
-        $personalizations = [
+        $result = $method->invoke($this->transport, $email);
+        self::assertEquals([
             [
-                'substitutions' => [
-                    'substitutions_key' => 'substitutions_value',
+                'to' => [
+                    ['email' => 'to1@sink.sendgrid.net', 'name' => 'test_to1'],
+                    ['email' => 'to2@sink.sendgrid.net', 'name' => 'test_to2'],
                 ],
-                'custom_args' => [
-                    'custom_args_key' => 'custom_args_value',
+                'cc' => [
+                    ['email' => 'cc1@sink.sendgrid.net', 'name' => 'test_cc1'],
+                    ['email' => 'cc2@sink.sendgrid.net', 'name' => 'test_cc2'],
                 ],
-                'send_at' => time(),
-            ],
-        ];
-
-        $message = new Message($this->getMessage());
-        $message->embedData([
-            'personalizations' => $personalizations,
-        ], 'sendgrid/x-smtpapi');
-        $data = [];
-        $data = $setParameters($message->getSwiftMessage(), $data);
-        $this->assertEquals(['personalizations' => $personalizations], $data);
+                'bcc' => [
+                    ['email' => 'bcc1@sink.sendgrid.net', 'name' => 'test_bcc1'],
+                    ['email' => 'bcc2@sink.sendgrid.net', 'name' => 'test_bcc2'],
+                ],
+            ]
+        ], $result);
     }
 
     public function testGetFrom()
     {
-        $getFrom = \Closure::bind(function ($message) {
-            return $this->getFrom($message);
-        }, $this->transport, SendgridTransport::class);
+        $email = (new Email())
+            ->from(
+                (new Address('from1@sink.sendgrid.net', 'test_from1')),
+            );
 
-        $from = 'test@exsample.com';
-        $from_name = 'test_user';
+        $method = $this->reflection->getMethod('getFrom');
+        $method->setAccessible(true);
 
-        $message = $this->getMessage();
-        $message->setFrom($from, $from_name);
-
-        $this->assertEquals(['email' => $from, 'name' => $from_name], $getFrom($message));
+        $result = $method->invoke($this->transport, $email);
+        self::assertEquals([
+            'email' => 'from1@sink.sendgrid.net',
+            'name' => 'test_from1',
+        ], $result);
     }
 
-    public function testReplyTo()
+    public function testGetContent()
     {
-        $getReplyTo = \Closure::bind(function ($message) {
-            return $this->getReplyTo($message);
-        }, $this->transport, SendgridTransport::class);
+        $email = (new Email())
+            ->text('test body')
+            ->html('<body>test body</body>');
 
-        $reply_to = 'test@exsample.com';
-        $reply_to_name = 'test_user';
+        $method = $this->reflection->getMethod('getContents');
+        $method->setAccessible(true);
 
-        $message = $this->getMessage();
-        $message->setReplyTo($reply_to, $reply_to_name);
-
-        $this->assertEquals(['email' => $reply_to, 'name' => $reply_to_name], $getReplyTo($message));
+        $result = $method->invoke($this->transport, $email);
+        self::assertEquals([
+            [
+                'type' => 'text/plain',
+                'value' => 'test body'
+            ],
+            [
+                'type' => 'text/html',
+                'value' => '<body>test body</body>'
+            ],
+        ], $result);
     }
 
-    public function testOverrideApiKey()
+    public function testGetReplyTo()
     {
-        $container = [];
-        $history = GuzzleHttp\Middleware::history($container);
-        $stack = GuzzleHttp\HandlerStack::create();
-        $stack->push($history);
-        $client = new GuzzleHttp\Client(['handler' => $stack]);
-        $transport = new SendgridTransport($client, 'This is the wrong value');
+        $email = (new Email())
+            ->replyTo((new Address('from1@sink.sendgrid.net', 'test_from1')));
 
-        $message = new Message($this->getMessage());
-        $message->from('from@google.com', 'test_from')
-            ->to('to@sink.sendgrid.net', 'test_to')
-            ->embedData([
-                'api_key' => $this->api_key,
-                'custom_args' => [
-                    'custom_args_key' => 'custom_args_value',
+        $method = $this->reflection->getMethod('getReplyTo');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->transport, $email);
+        self::assertEquals([
+            'email' => 'from1@sink.sendgrid.net',
+            'name' => 'test_from1',
+        ], $result);
+    }
+
+    public function testGetAttachments()
+    {
+        $file = file_get_contents(__DIR__ . '/test.png');
+        $email = (new Email())
+            ->attach($file, 'test.png', 'image/png')
+            ->embed(self::sgEncode([
+                'personalizations' => [
+                    [
+                        'to' => [
+                            'email' => 'to1@sink.sendgrid.net',
+                            'name' => 'test_to1',
+                        ],
+                    ],
                 ],
-            ], 'sendgrid/x-smtpapi');
-        $transport->send($message->getSwiftMessage());
+                'categories' => ['test_category']
+            ]), SendgridTransport::REQUEST_BODY_PARAMETER);
 
-        /** @var \GuzzleHttp\Psr7\Request $request */
-        $request = Arr::get($container, '0.request');
-        $this->assertEquals('Bearer ' . $this->api_key, $request->getHeaderLine('Authorization'));
-        $this->assertStringNotContainsString('"api_key":', (string)$request->getBody());
+        $method = $this->reflection->getMethod('getAttachments');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->transport, $email);
+        unset($result[0]['content_id']);
+        self::assertEquals([
+            [
+                'content' => base64_encode($file),
+                'filename' => 'test.png',
+                'type' => 'image',
+                'disposition' => null,
+            ]
+        ], $result);
     }
 
-    /**
-     * @return Swift_Message
-     */
-    private function getMessage()
+    public function testSetParameters()
     {
-        return new Swift_Message('Test subject', 'Test body.');
+        $email = (new Email())
+            ->embed(self::sgEncode([
+                'personalizations' => [
+                    [
+                        'to' => [
+                            ['email' => 'to1@sink.sendgrid.net', 'name' => 'test_to1'],
+                            ['email' => 'to2@sink.sendgrid.net', 'name' => 'test_to2'],
+                        ],
+                        'cc' => [
+                            ['email' => 'cc1@sink.sendgrid.net', 'name' => 'test_cc1'],
+                            ['email' => 'cc2@sink.sendgrid.net', 'name' => 'test_cc2'],
+                        ],
+                        'bcc' => [
+                            ['email' => 'bcc1@sink.sendgrid.net', 'name' => 'test_bcc1'],
+                            ['email' => 'bcc2@sink.sendgrid.net', 'name' => 'test_bcc2'],
+                        ],
+                    ],
+                ],
+                'categories' => ['test_category']
+            ]), SendgridTransport::REQUEST_BODY_PARAMETER);
+
+        $method = $this->reflection->getMethod('setParameters');
+        $method->setAccessible(true);
+
+        $data = [];
+        $result = $method->invoke($this->transport, $email, $data);
+        unset($result[0]['content_id']);
+        self::assertEquals([
+            'personalizations' => [
+                [
+                    'to' => [
+                        ['email' => 'to1@sink.sendgrid.net', 'name' => 'test_to1'],
+                        ['email' => 'to2@sink.sendgrid.net', 'name' => 'test_to2'],
+                    ],
+                    'cc' => [
+                        ['email' => 'cc1@sink.sendgrid.net', 'name' => 'test_cc1'],
+                        ['email' => 'cc2@sink.sendgrid.net', 'name' => 'test_cc2'],
+                    ],
+                    'bcc' => [
+                        ['email' => 'bcc1@sink.sendgrid.net', 'name' => 'test_bcc1'],
+                        ['email' => 'bcc2@sink.sendgrid.net', 'name' => 'test_bcc2'],
+                    ],
+                ],
+            ],
+            'categories' => ['test_category']
+        ], $result);
     }
 }
