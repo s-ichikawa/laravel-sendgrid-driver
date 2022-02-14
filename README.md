@@ -1,7 +1,7 @@
 Laravel SendGrid Driver
 ====
 
-[![SymfonyInsight](https://insight.symfony.com/projects/4232643f-006c-473b-97ff-d0f67fa497ee/mini.svg)](https://insight.symfony.com/projects/4232643f-006c-473b-97ff-d0f67fa497ee)
+[![SymfonyInsight](https://insight.symfony.com/projects/8955bc55-16f6-4ac9-8203-1cdce3d209a8/mini.svg)](https://insight.symfony.com/projects/8955bc55-16f6-4ac9-8203-1cdce3d209a8)
 [![Build Status](https://scrutinizer-ci.com/g/s-ichikawa/laravel-sendgrid-driver/badges/build.png?b=master)](https://scrutinizer-ci.com/g/s-ichikawa/laravel-sendgrid-driver/build-status/master)
 
 A Mail Driver with support for Sendgrid Web API, using the original Laravel API.
@@ -10,17 +10,12 @@ This library extends the original Laravel classes, so it uses exactly the same m
 To use this package required your [Sendgrid Api Key](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html).
 Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
-# Notification
-
-If your project using guzzlehttp/guzzle 6.2.0 or less, you can use version [1.0.0](https://github.com/s-ichikawa/laravel-sendgrid-driver/tree/1.0.0)
-But the old version has [security issues](https://github.com/guzzle/guzzle/releases/tag/6.2.1), 
-
 # Install (Laravel)
 
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "~3.0"
+    "s-ichikawa/laravel-sendgrid-driver": "^4.0"
 },
 ```
 
@@ -48,7 +43,7 @@ Add the package to your composer.json and run composer update.
 
 or installed with composer
 ```bash
-$ composer require "s-ichikawa/laravel-sendgrid-driver:~2.0"
+$ composer require "s-ichikawa/laravel-sendgrid-driver:^4.0"
 ```
 
 Add the sendgrid service provider in bootstrap/app.php
@@ -105,68 +100,13 @@ For example, calls to SendGrid API through a proxy, call endpoint for confirming
     ],
 ```
 
-## Request Body Parameters
+## How to use
 
 Every request made to /v3/mail/send will require a request body formatted in JSON containing your email’s content and metadata.
 Required parameters are set by Laravel's usually mail sending, but you can also use useful features like "categories" and "send_at".
 
-```php
-\Mail::send('view', $data, function (Message $message) {
-    $message
-        ->to('foo@example.com', 'foo_name')
-        ->from('bar@example.com', 'bar_name')
-        ->embedData([
-            'categories' => ['user_group1'],
-            'send_at'    => $send_at->getTimestamp(),
-        ], 'sendgrid/x-smtpapi');
-});
-```
-
 more info
 https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
-
-
-## API v3
-
-```php
-\Mail::send('view', $data, function (Message $message) {
-    $message
-        ->to('foo@example.com', 'foo_name')
-        ->from('bar@example.com', 'bar_name')
-        ->replyTo('foo@bar.com', 'foobar');
-        ->embedData([
-            'personalizations' => [
-                [
-                    'to' => [
-                        'email' => 'user1@example.com',
-                        'name'  => 'user1',
-                    ],
-                    'substitutions' => [
-                        '-email-' => 'user1@example.com',
-                    ],
-                ],
-                [
-                    'to' => [
-                        'email' => 'user2@example.com',
-                        'name'  => 'user2',
-                    ],
-                    'substitutions' => [
-                        '-email-' => 'user2@example.com',
-                    ],
-                ],
-            ],
-            'categories' => ['user_group1'],
-            'custom_args' => [
-                'user_id' => "123" // Make sure this is a string value
-            ]
-        ], 'sendgrid/x-smtpapi');
-});
-```
-
-- custom_args values have to be strings. Sendgrid API gives a non-descriptive error message when you enter non-string values.
-
-
-## Use in Mailable
 
 ```php
 <?
@@ -186,11 +126,21 @@ class SendGridSample extends Mailable
             ->sendgrid([
                 'personalizations' => [
                     [
-                        'substitutions' => [
-                            ':myname' => 's-ichikawa',
+                        'to' => [
+                            ['email' => 'to1@gmail.com', 'name' => 'to1'],
+                            ['email' => 'to2@gmail.com', 'name' => 'to2'],
+                        ],
+                        'cc' => [
+                            ['email' => 'cc1@gmail.com', 'name' => 'cc1'],
+                            ['email' => 'cc2@gmail.com', 'name' => 'cc2'],
+                        ],
+                        'bcc' => [
+                            ['email' => 'bcc1@gmail.com', 'name' => 'bcc1'],
+                            ['email' => 'bcc2@gmail.com', 'name' => 'bcc2'],
                         ],
                     ],
                 ],
+                'categories' => ['user_group1'],
             ]);
     }
 }
@@ -202,10 +152,14 @@ Illuminate\Mailer has generally required a view file.
 But in case of using template id, set an empty array at view function.
 ```php
 <?
-\Mail::send([], [], function (Message $message) {
-    $message
-        ->to('to@example.com')
-        ->embedData([
+    public function build()
+    {
+        return $this
+            ->view('template name')
+            ->subject('subject')
+            ->from('from@example.com')
+            ->to(['to@example.com'])
+            ->sendgrid([
             'personalizations' => [
                 [
                     'dynamic_template_data' => [
@@ -215,24 +169,6 @@ But in case of using template id, set an empty array at view function.
                 ],
             ],
             'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
-        ], SendgridTransport::SMTP_API_NAME);
-});
-```
-
-## Using with Telescope
-
-In case [telescope](https://laravel.com/docs/5.7/telescope) is active and set array to first variable in embedData, telescope's watcher happen error in encoding.
-In ordar to avoid this probrem, you can use sgEncode function.
-```php
-<?
-use Sichikawa\LaravelSendgridDriver\SendGrid;
-
-\Mail::send('view', $data, function (Message $message) {
-    $message
-        ->to('foo@example.com', 'foo_name')
-        ->from('bar@example.com', 'bar_name')
-        ->embedData(sgEncode([
-            'categories' => ['user_group1'],
-        ]), 'sendgrid/x-smtpapi');
-});
+        ]);
+    }
 ```
