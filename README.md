@@ -10,7 +10,7 @@ This library extends the original Laravel classes, so it uses exactly the same m
 To use this package required your [Sendgrid Api Key](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html).
 Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
-# Install (Laravel)
+# Install (for [Laravel](https://laravel.com/))
 
 Add the package to your composer.json and run composer update.
 ```json
@@ -32,12 +32,12 @@ Add the sendgrid service provider in config/app.php:
 ];
 ```
 
-# Install (Lumen)
+# Install (for [Lumen](https://lumen.laravel.com/))
 
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "~2.0"
+    "s-ichikawa/laravel-sendgrid-driver": "^4.0"
 },
 ```
 

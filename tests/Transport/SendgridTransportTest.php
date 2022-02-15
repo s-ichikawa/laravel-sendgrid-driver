@@ -197,4 +197,54 @@ class SendgridTransportTest extends \TestCase
             'categories' => ['test_category']
         ], $result);
     }
+
+    public function testSetParameters_with_SMTP_API_NAME()
+    {
+        $email = (new Email())
+            ->embed(self::sgEncode([
+                'personalizations' => [
+                    [
+                        'to' => [
+                            ['email' => 'to1@sink.sendgrid.net', 'name' => 'test_to1'],
+                            ['email' => 'to2@sink.sendgrid.net', 'name' => 'test_to2'],
+                        ],
+                        'cc' => [
+                            ['email' => 'cc1@sink.sendgrid.net', 'name' => 'test_cc1'],
+                            ['email' => 'cc2@sink.sendgrid.net', 'name' => 'test_cc2'],
+                        ],
+                        'bcc' => [
+                            ['email' => 'bcc1@sink.sendgrid.net', 'name' => 'test_bcc1'],
+                            ['email' => 'bcc2@sink.sendgrid.net', 'name' => 'test_bcc2'],
+                        ],
+                    ],
+                ],
+                'categories' => ['test_category']
+            ]), SendgridTransport::SMTP_API_NAME);
+
+        $method = $this->reflection->getMethod('setParameters');
+        $method->setAccessible(true);
+
+        $data = [];
+        $result = $method->invoke($this->transport, $email, $data);
+        unset($result[0]['content_id']);
+        self::assertEquals([
+            'personalizations' => [
+                [
+                    'to' => [
+                        ['email' => 'to1@sink.sendgrid.net', 'name' => 'test_to1'],
+                        ['email' => 'to2@sink.sendgrid.net', 'name' => 'test_to2'],
+                    ],
+                    'cc' => [
+                        ['email' => 'cc1@sink.sendgrid.net', 'name' => 'test_cc1'],
+                        ['email' => 'cc2@sink.sendgrid.net', 'name' => 'test_cc2'],
+                    ],
+                    'bcc' => [
+                        ['email' => 'bcc1@sink.sendgrid.net', 'name' => 'test_bcc1'],
+                        ['email' => 'bcc2@sink.sendgrid.net', 'name' => 'test_bcc2'],
+                    ],
+                ],
+            ],
+            'categories' => ['test_category']
+        ], $result);
+    }
 }

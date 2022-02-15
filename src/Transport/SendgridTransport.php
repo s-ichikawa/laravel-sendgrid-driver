@@ -25,6 +25,11 @@ class SendgridTransport extends AbstractTransport
      * https://docs.sendgrid.com/api-reference/mail-send/mail-send
      */
     const BASE_URL = 'https://api.sendgrid.com/v3/mail/send';
+
+    /**
+     * @deprecated use REQUEST_BODY_PARAMETER instead
+     */
+    const SMTP_API_NAME = 'sendgrid/request-body-parameter';
     const REQUEST_BODY_PARAMETER = 'sendgrid/request-body-parameter';
 
     /**
