@@ -142,7 +142,7 @@ class SendgridTransportTest extends \TestCase
             [
                 'content' => base64_encode($file),
                 'filename' => 'test.png',
-                'type' => 'image',
+                'type' => 'image/png',
                 'disposition' => null,
             ]
         ], $result);
