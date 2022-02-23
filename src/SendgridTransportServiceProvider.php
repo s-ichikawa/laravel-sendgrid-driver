@@ -11,7 +11,7 @@ use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
 class SendgridTransportServiceProvider extends ServiceProvider
 {
     /**
-     * Register the Swift Transport instance.
+     * Register the Sendgrid Transport instance.
      *
      * @return void
      */
@@ -23,7 +23,7 @@ class SendgridTransportServiceProvider extends ServiceProvider
                     $config = $this->app['config']->get('services.sendgrid', []);
                 }
                 $client = new HttpClient(Arr::get($config, 'guzzle', []));
-                $endpoint = isset($config['endpoint']) ? $config['endpoint'] : null;
+                $endpoint = $config['endpoint'] ?? null;
 
                 return new SendgridTransport($client, $config['api_key'], $endpoint);
             });
