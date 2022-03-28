@@ -46,6 +46,7 @@ class SendgridTransport extends AbstractTransport
         $this->client = $client;
         $this->apiKey = $api_key;
         $this->endpoint = $endpoint ?? self::BASE_URL;
+        $this->attachments = [];
 
         parent::__construct();
     }
