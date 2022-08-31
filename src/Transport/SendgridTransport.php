@@ -83,8 +83,12 @@ class SendgridTransport extends AbstractTransport
             ],
             'json' => $data,
         ];
+    
+        $response = $this->post($payload);
 
-        $this->post($payload);
+        $message->getOriginalMessage()
+            ->getHeaders()
+            ->addTextHeader('X-Sendgrid-Message-Id', $response->getHeaderLine('X-Message-Id'));
     }
 
     /**
