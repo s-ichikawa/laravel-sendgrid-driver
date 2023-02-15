@@ -4,8 +4,8 @@
     "keywords": ["laravel", "sendgrid"],
     "license": "MIT",
     "require": {
-        "illuminate/mail": "^9.0",
-        "illuminate/support": "^9.0",
+        "illuminate/mail": "^9.0||^10.0",
+        "illuminate/support": "^9.0||^10.0",
         "guzzlehttp/guzzle": "^7.2"
     },
     "require-dev": {
