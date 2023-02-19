@@ -11,7 +11,7 @@
     "require-dev": {
         "illuminate/container": "^9.0||^10.0",
         "illuminate/filesystem": "^9.0||^10.0",
-        "phpunit/phpunit": "^9.5.8",
+        "phpunit/phpunit": "^9.5.8||^10.0",
         "laravel/helpers": "^1.2",
         "vlucas/phpdotenv": "^5.4.1"
     },
