@@ -15,7 +15,7 @@ Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "^5.0"
+    "s-ichikawa/laravel-sendgrid-driver": "^4.0"
 },
 ```
 
@@ -29,7 +29,7 @@ $ composer require s-ichikawa/laravel-sendgrid-driver
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "^5.0"
+    "s-ichikawa/laravel-sendgrid-driver": "^4.0"
 },
 ```
 

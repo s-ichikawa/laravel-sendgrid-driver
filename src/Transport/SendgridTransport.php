@@ -275,7 +275,7 @@ class SendgridTransport extends AbstractTransport  implements Stringable
     }
 
     /**
-     * @param $payload array
+     * @param array $payload
      * @return ResponseInterface
      * @throws ClientException
      */
