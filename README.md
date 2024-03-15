@@ -24,14 +24,6 @@ or installed with composer
 $ composer require s-ichikawa/laravel-sendgrid-driver
 ```
 
-Add the sendgrid service provider in config/app.php:
-(Laravel 5.5+ uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.)
-```php
-'providers' => [
-    Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class
-];
-```
-
 # Install (for [Lumen](https://lumen.laravel.com/))
 
 Add the package to your composer.json and run composer update.
@@ -43,7 +35,7 @@ Add the package to your composer.json and run composer update.
 
 or installed with composer
 ```bash
-$ composer require "s-ichikawa/laravel-sendgrid-driver:^4.0"
+$ composer require "s-ichikawa/laravel-sendgrid-driver"
 ```
 
 Add the sendgrid service provider in bootstrap/app.php
@@ -108,6 +100,7 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
 more info
 https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
 
+Laravel 10, 11:
 ```php
 <?
 use Sichikawa\LaravelSendgridDriver\SendGrid;
@@ -116,7 +109,46 @@ class SendGridSample extends Mailable
 {
     use SendGrid;
     
-    public function build()
+    public function envelope(): Envelope
+    {
+        $this->sendgrid([
+                'personalizations' => [
+                    [
+                        'to' => [
+                            ['email' => 'to1@gmail.com', 'name' => 'to1'],
+                            ['email' => 'to2@gmail.com', 'name' => 'to2'],
+                        ],
+                        'cc' => [
+                            ['email' => 'cc1@gmail.com', 'name' => 'cc1'],
+                            ['email' => 'cc2@gmail.com', 'name' => 'cc2'],
+                        ],
+                        'bcc' => [
+                            ['email' => 'bcc1@gmail.com', 'name' => 'bcc1'],
+                            ['email' => 'bcc2@gmail.com', 'name' => 'bcc2'],
+                        ],
+                    ],
+                ],
+                'categories' => ['user_group1'],
+            ]);
+        return new Envelope(
+            from:    'from@example.com',
+            replyTo: 'reply@example.com',
+            subject: 'example',
+        );
+    }
+}
+```
+
+Laravel 9:
+```php
+<?
+use Sichikawa\LaravelSendgridDriver\SendGrid;
+
+class SendGridSample extends Mailable
+{
+    use SendGrid;
+    
+    public function build():
     {
         return $this
             ->view('template name')
@@ -145,21 +177,17 @@ class SendGridSample extends Mailable
     }
 }
 ```
-
 ## Using Template Id
 
 Illuminate\Mailer has generally required a view file.
 But in case of using template id, set an empty array at view function.
+
+Laravel 10, 11:
 ```php
 <?
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this
-            ->view('template name')
-            ->subject('subject')
-            ->from('from@example.com')
-            ->to(['to@example.com'])
-            ->sendgrid([
+        $this->sendgrid([
             'personalizations' => [
                 [
                     'dynamic_template_data' => [
@@ -170,5 +198,34 @@ But in case of using template id, set an empty array at view function.
             ],
             'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
         ]);
+        return new Envelope(
+            from:    'from@example.com',
+            replyTo: 'reply@example.com',
+            subject: 'example',
+        );
+    }
+```
+
+Laravel 9:
+```php
+<?
+    public function build():
+    {
+        return $this
+            ->view('template name')
+            ->subject('subject')
+            ->from('from@example.com')
+            ->to(['to@example.com'])
+            ->sendgrid([
+                'personalizations' => [
+                    [
+                        'dynamic_template_data' => [
+                            'title' => 'Subject',
+                            'name'  => 's-ichikawa',
+                        ],
+                    ],
+                ],
+                'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
+            ]);
     }
 ```

@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Sichikawa\LaravelSendgridDriver\SendGrid;
+use Stringable;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\Address;
@@ -15,7 +16,7 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\MessageConverter;
 use Symfony\Component\Mime\Part\DataPart;
 
-class SendgridTransport extends AbstractTransport
+class SendgridTransport extends AbstractTransport implements Stringable
 {
     use SendGrid {
         sgDecode as decode;
@@ -83,7 +84,7 @@ class SendgridTransport extends AbstractTransport
             ],
             'json' => $data,
         ];
-    
+
         $response = $this->post($payload);
 
         $message->getOriginalMessage()
@@ -274,7 +275,7 @@ class SendgridTransport extends AbstractTransport
     }
 
     /**
-     * @param $payload
+     * @param array $payload
      * @return ResponseInterface
      * @throws ClientException
      */
