@@ -10,6 +10,15 @@ This library extends the original Laravel classes, so it uses exactly the same m
 To use this package required your [Sendgrid Api Key](https://sendgrid.com/docs/User_Guide/Settings/api_keys.html).
 Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
+
+### Compatibility
+
+| Laravel   | laravel-sendgrid-driver |
+|-----------| ---- |
+| 9, 10, 11 | ^4.0 |
+| 7, 8      | ^3.0 |
+| 5, 6      | ^2.0 |
+
 # Install (for [Laravel](https://laravel.com/))
 
 Add the package to your composer.json and run composer update.
