@@ -15,7 +15,7 @@ Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "^4.0"
+    "s-ichikawa/laravel-sendgrid-driver": "^5.0"
 },
 ```
 
@@ -24,26 +24,18 @@ or installed with composer
 $ composer require s-ichikawa/laravel-sendgrid-driver
 ```
 
-Add the sendgrid service provider in config/app.php:
-(Laravel 5.5+ uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.)
-```php
-'providers' => [
-    Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class
-];
-```
-
 # Install (for [Lumen](https://lumen.laravel.com/))
 
 Add the package to your composer.json and run composer update.
 ```json
 "require": {
-    "s-ichikawa/laravel-sendgrid-driver": "^4.0"
+    "s-ichikawa/laravel-sendgrid-driver": "^5.0"
 },
 ```
 
 or installed with composer
 ```bash
-$ composer require "s-ichikawa/laravel-sendgrid-driver:^4.0"
+$ composer require "s-ichikawa/laravel-sendgrid-driver"
 ```
 
 Add the sendgrid service provider in bootstrap/app.php
@@ -116,14 +108,9 @@ class SendGridSample extends Mailable
 {
     use SendGrid;
     
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this
-            ->view('template name')
-            ->subject('subject')
-            ->from('from@example.com')
-            ->to(['to@example.com'])
-            ->sendgrid([
+        $this->sendgrid([
                 'personalizations' => [
                     [
                         'to' => [
@@ -142,6 +129,11 @@ class SendGridSample extends Mailable
                 ],
                 'categories' => ['user_group1'],
             ]);
+        return new Envelope(
+            from:    'from@example.com',
+            replyTo: 'reply@example.com',
+            subject: 'example',
+        );
     }
 }
 ```
@@ -152,14 +144,9 @@ Illuminate\Mailer has generally required a view file.
 But in case of using template id, set an empty array at view function.
 ```php
 <?
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this
-            ->view('template name')
-            ->subject('subject')
-            ->from('from@example.com')
-            ->to(['to@example.com'])
-            ->sendgrid([
+        $this->sendgrid([
             'personalizations' => [
                 [
                     'dynamic_template_data' => [
@@ -170,5 +157,10 @@ But in case of using template id, set an empty array at view function.
             ],
             'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
         ]);
+        return new Envelope(
+            from:    'from@example.com',
+            replyTo: 'reply@example.com',
+            subject: 'example',
+        );
     }
 ```
