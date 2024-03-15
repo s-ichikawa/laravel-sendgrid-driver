@@ -16,7 +16,7 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\MessageConverter;
 use Symfony\Component\Mime\Part\DataPart;
 
-class SendgridTransport extends AbstractTransport  implements Stringable
+class SendgridTransport extends AbstractTransport implements Stringable
 {
     use SendGrid {
         sgDecode as decode;
@@ -84,7 +84,7 @@ class SendgridTransport extends AbstractTransport  implements Stringable
             ],
             'json' => $data,
         ];
-    
+
         $response = $this->post($payload);
 
         $message->getOriginalMessage()
