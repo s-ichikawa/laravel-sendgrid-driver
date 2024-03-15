@@ -100,6 +100,7 @@ Required parameters are set by Laravel's usually mail sending, but you can also 
 more info
 https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
 
+Laravel 10, 11:
 ```php
 <?
 use Sichikawa\LaravelSendgridDriver\SendGrid;
@@ -138,10 +139,50 @@ class SendGridSample extends Mailable
 }
 ```
 
+Laravel 9:
+```php
+<?
+use Sichikawa\LaravelSendgridDriver\SendGrid;
+
+class SendGridSample extends Mailable
+{
+    use SendGrid;
+    
+    public function build():
+    {
+        return $this
+            ->view('template name')
+            ->subject('subject')
+            ->from('from@example.com')
+            ->to(['to@example.com'])
+            ->sendgrid([
+                'personalizations' => [
+                    [
+                        'to' => [
+                            ['email' => 'to1@gmail.com', 'name' => 'to1'],
+                            ['email' => 'to2@gmail.com', 'name' => 'to2'],
+                        ],
+                        'cc' => [
+                            ['email' => 'cc1@gmail.com', 'name' => 'cc1'],
+                            ['email' => 'cc2@gmail.com', 'name' => 'cc2'],
+                        ],
+                        'bcc' => [
+                            ['email' => 'bcc1@gmail.com', 'name' => 'bcc1'],
+                            ['email' => 'bcc2@gmail.com', 'name' => 'bcc2'],
+                        ],
+                    ],
+                ],
+                'categories' => ['user_group1'],
+            ]);
+    }
+}
+```
 ## Using Template Id
 
 Illuminate\Mailer has generally required a view file.
 But in case of using template id, set an empty array at view function.
+
+Laravel 10, 11:
 ```php
 <?
     public function envelope(): Envelope
@@ -162,5 +203,29 @@ But in case of using template id, set an empty array at view function.
             replyTo: 'reply@example.com',
             subject: 'example',
         );
+    }
+```
+
+Laravel 9:
+```php
+<?
+    public function build():
+    {
+        return $this
+            ->view('template name')
+            ->subject('subject')
+            ->from('from@example.com')
+            ->to(['to@example.com'])
+            ->sendgrid([
+                'personalizations' => [
+                    [
+                        'dynamic_template_data' => [
+                            'title' => 'Subject',
+                            'name'  => 's-ichikawa',
+                        ],
+                    ],
+                ],
+                'template_id' => config('services.sendgrid.templates.dynamic_template_id'),
+            ]);
     }
 ```
