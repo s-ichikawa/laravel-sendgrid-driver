@@ -132,6 +132,8 @@ class SendgridTransportTest extends \TestCase
         $method->invoke($transport, $send);
 
         $this->assertEquals($messageId, $send->getMessageId());
+
+        $this->assertEquals($messageId, $email->getHeaders()->getHeaderBody('X-Sendgrid-Message-ID'));
     }
 
     public function testGetReplyTo()

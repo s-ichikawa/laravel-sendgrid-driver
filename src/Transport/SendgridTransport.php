@@ -87,7 +87,13 @@ class SendgridTransport extends AbstractTransport implements Stringable
 
         $response = $this->post($payload);
 
-        $message->setMessageId($response->getHeaderLine('X-Message-Id'));
+        $messageId = $response->getHeaderLine('X-Message-Id');
+
+        $message->setMessageId($messageId);
+
+        $message->getOriginalMessage()
+            ->getHeaders()
+            ->addTextHeader('X-Sendgrid-Message-Id', $messageId);
     }
 
     /**
