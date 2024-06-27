@@ -107,7 +107,7 @@ Every request made to /v3/mail/send will require a request body formatted in JSO
 Required parameters are set by Laravel's usually mail sending, but you can also use useful features like "categories" and "send_at".
 
 more info
-https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html#-Request-Body-Parameters
+https://www.twilio.com/docs/sendgrid/api-reference/mail-send/mail-send
 
 Laravel 10, 11:
 ```php
