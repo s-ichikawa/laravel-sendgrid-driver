@@ -206,7 +206,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
                 'filename' => $this->getAttachmentName($attachment),
                 'type' => $this->getAttachmentContentType($attachment),
                 'disposition' => $attachment->getDisposition(),
-                'content_id' => $attachment->getContentId(),
+                'content_id' => $this->getAttachmentName($attachment),
             ];
         }
         return $attachments;
