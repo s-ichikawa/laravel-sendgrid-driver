@@ -283,7 +283,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
      * @return ResponseInterface
      * @throws ClientException
      */
-    private function post($payload)
+    protected function post($payload)
     {
         return $this->client->request('POST', $this->endpoint, $payload);
     }
