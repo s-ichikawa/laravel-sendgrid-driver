@@ -42,7 +42,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
     private $apiKey;
     private $endpoint;
 
-    public function __construct(ClientInterface $client, string $api_key, string $endpoint = null)
+    public function __construct(ClientInterface $client, string $api_key, ?string $endpoint = null)
     {
         $this->client = $client;
         $this->apiKey = $api_key;
