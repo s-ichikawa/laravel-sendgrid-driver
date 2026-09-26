@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint (Pint + PHPStan)
+    name: Lint (Pint + PHPStan + Rector)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +31,9 @@ jobs:
 
       - name: PHPStan
         run: vendor/bin/phpstan analyse --no-progress --error-format=github
+
+      - name: Rector
+        run: vendor/bin/rector process --dry-run --no-progress-bar
 
   tests:
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / Guzzle ${{ matrix.guzzle }}${{ matrix.dependencies == 'lowest' && ' (lowest)' || '' }}
