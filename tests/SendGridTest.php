@@ -1,15 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ichikawashingo
- * Date: 2019/02/24
- * Time: 11:21
- */
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use Sichikawa\LaravelSendgridDriver\SendGrid;
 
 class SendGridTest extends \PHPUnit\Framework\TestCase
 {
-    use \Sichikawa\LaravelSendgridDriver\SendGrid;
+    use SendGrid;
 
     const PARAMS = [
         'personalizations' => [
@@ -23,39 +19,31 @@ class SendGridTest extends \PHPUnit\Framework\TestCase
     ];
     const STR_PARAMS = '{"personalizations":[{"to":{"email":"foo@sink.sendgrid.net","name":"foo"}}]}';
 
-    public function providerTestSgEncode()
+    public static function providerTestSgEncode(): array
     {
         return [
-            [self::PARAMS, self::STR_PARAMS],
-            [self::STR_PARAMS, self::STR_PARAMS],
+            'array' => [self::PARAMS, self::STR_PARAMS],
+            'string' => [self::STR_PARAMS, self::STR_PARAMS],
         ];
     }
 
-    /**
-     * @param $params
-     * @param $expected
-     * @dataProvider providerTestSgEncode
-     */
-    public function testSgEncode($params, $expected)
+    #[DataProvider('providerTestSgEncode')]
+    public function testSgEncode($params, string $expected): void
     {
         $result = self::sgEncode($params);
         $this->assertSame($expected, $result);
     }
 
-    public function providerTestSgDecode()
+    public static function providerTestSgDecode(): array
     {
         return [
-            [self::STR_PARAMS, self::PARAMS],
-            [self::PARAMS, self::PARAMS],
+            'string' => [self::STR_PARAMS, self::PARAMS],
+            'array' => [self::PARAMS, self::PARAMS],
         ];
     }
 
-    /**
-     * @param $str
-     * @param $expected
-     * @dataProvider providerTestSgDecode
-     */
-    public function testSgDecode($str, $expected)
+    #[DataProvider('providerTestSgDecode')]
+    public function testSgDecode($str, array $expected): void
     {
         $result = self::sgDecode($str);
         $this->assertSame($expected, $result);
