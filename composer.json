@@ -15,7 +15,8 @@
     "require-dev": {
         "illuminate/container": "^9.0||^10.0||^11.0||^12.0||^13.0",
         "illuminate/filesystem": "^9.0||^10.0||^11.0||^12.0||^13.0",
-        "phpunit/phpunit": "^10.5||^11.0||^12.0"
+        "phpunit/phpunit": "^10.5||^11.0||^12.0",
+        "laravel/pint": "^1.13"
     },
     "autoload": {
         "psr-4": {
@@ -47,7 +48,9 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "lint": "pint --test",
+        "lint:fix": "pint"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
