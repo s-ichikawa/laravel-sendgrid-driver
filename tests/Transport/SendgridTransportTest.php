@@ -23,11 +23,12 @@ class SendgridTransportTest extends \TestCase
 
     protected SendgridTransport $transport;
 
+    /** @var \ReflectionClass<SendgridTransport> */
     private \ReflectionClass $reflection;
 
     private MockHandler $mockHandler;
 
-    /** @var array<int, array{request: RequestInterface, response: ?ResponseInterface}> */
+    /** @var array<int, array{request: RequestInterface, response: ?ResponseInterface, error: mixed, options: array<mixed>}> */
     private array $history = [];
 
     protected function setUp(): void
@@ -41,7 +42,7 @@ class SendgridTransportTest extends \TestCase
         $this->reflection = new \ReflectionClass($this->transport);
     }
 
-    public function testGetPersonalizations()
+    public function testGetPersonalizations(): void
     {
         $email = (new Email)
             ->to(
@@ -78,7 +79,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function testGetFrom()
+    public function testGetFrom(): void
     {
         $email = (new Email)
             ->from(
@@ -94,7 +95,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function testGetContent()
+    public function testGetContent(): void
     {
         $email = (new Email)
             ->text('test body')
@@ -115,7 +116,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function testXMessageID()
+    public function testXMessageID(): void
     {
         $messageId = Str::random(32);
         $this->mockHandler->append(new Response(202, ['X-Message-Id' => $messageId]));
@@ -152,7 +153,7 @@ class SendgridTransportTest extends \TestCase
         ], $body['content']);
     }
 
-    public function testGetReplyTo()
+    public function testGetReplyTo(): void
     {
         $email = (new Email)
             ->replyTo((new Address('from1@sink.sendgrid.net', 'test_from1')));
@@ -166,7 +167,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function testGetAttachments()
+    public function testGetAttachments(): void
     {
         $file = file_get_contents(__DIR__.'/test.png');
         $email = (new Email)
@@ -197,7 +198,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function testSetParameters()
+    public function testSetParameters(): void
     {
         $email = (new Email)
             ->embed(self::sgEncode([
@@ -246,7 +247,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function testSetParameters_with_SMTP_API_NAME()
+    public function testSetParameters_with_SMTP_API_NAME(): void
     {
         $email = (new Email)
             ->embed(self::sgEncode([
