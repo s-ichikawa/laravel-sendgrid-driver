@@ -11,6 +11,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Lint (Pint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Pint
+        run: vendor/bin/pint --test
+
   tests:
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / Guzzle ${{ matrix.guzzle }}${{ matrix.dependencies == 'lowest' && ' (lowest)' || '' }}
     runs-on: ubuntu-latest
