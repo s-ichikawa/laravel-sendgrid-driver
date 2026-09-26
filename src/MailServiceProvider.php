@@ -1,4 +1,5 @@
 <?php
+
 namespace Sichikawa\LaravelSendgridDriver;
 
 class MailServiceProvider extends \Illuminate\Mail\MailServiceProvider

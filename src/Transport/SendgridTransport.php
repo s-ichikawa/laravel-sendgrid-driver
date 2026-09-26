@@ -31,15 +31,20 @@ class SendgridTransport extends AbstractTransport implements Stringable
      * @deprecated use REQUEST_BODY_PARAMETER instead
      */
     const SMTP_API_NAME = 'sendgrid/request-body-parameter';
+
     const REQUEST_BODY_PARAMETER = 'sendgrid/request-body-parameter';
 
     /**
      * @var Client
      */
     private $client;
+
     private $attachments;
+
     private $numberOfRecipients;
+
     private $apiKey;
+
     private $endpoint;
 
     public function __construct(ClientInterface $client, string $api_key, ?string $endpoint = null)
@@ -79,7 +84,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
 
         $payload = [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer '.$this->apiKey,
                 'Content-Type' => 'application/json',
             ],
             'json' => $data,
@@ -97,7 +102,6 @@ class SendgridTransport extends AbstractTransport implements Stringable
     }
 
     /**
-     * @param Email $email
      * @return array[]
      */
     private function getPersonalizations(Email $email): array
@@ -118,8 +122,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
     }
 
     /**
-     * @param Address[] $addresses
-     * @return array
+     * @param  Address[]  $addresses
      */
     private function setAddress(array $addresses): array
     {
@@ -131,13 +134,10 @@ class SendgridTransport extends AbstractTransport implements Stringable
             }
             $recipients[] = $recipient;
         }
+
         return $recipients;
     }
 
-    /**
-     * @param Email $email
-     * @return array
-     */
     private function getFrom(Email $email): array
     {
         if (count($email->getFrom()) > 0) {
@@ -145,24 +145,21 @@ class SendgridTransport extends AbstractTransport implements Stringable
                 return ['email' => $from->getAddress(), 'name' => $from->getName()];
             }
         }
+
         return [];
     }
 
-    /**
-     * @param Email $email
-     * @return array
-     */
     private function getContents(Email $email): array
     {
         $contents = [];
-        if (!is_null($email->getTextBody())) {
+        if (! is_null($email->getTextBody())) {
             $contents[] = [
                 'type' => 'text/plain',
                 'value' => $email->getTextBody(),
             ];
         }
 
-        if (!is_null($email->getHtmlBody())) {
+        if (! is_null($email->getHtmlBody())) {
             $contents[] = [
                 'type' => 'text/html',
                 'value' => $email->getHtmlBody(),
@@ -172,26 +169,20 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $contents;
     }
 
-    /**
-     * @param Email $email
-     * @return array|null
-     */
     private function getReplyTo(Email $email): ?array
     {
         if (count($email->getReplyTo()) > 0) {
             $replyTo = $email->getReplyTo()[0];
+
             return [
                 'email' => $replyTo->getAddress(),
                 'name' => $replyTo->getName(),
             ];
         }
+
         return null;
     }
 
-    /**
-     * @param Email $email
-     * @return array
-     */
     private function getAttachments(Email $email): array
     {
         $attachments = [];
@@ -209,6 +200,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
                 'content_id' => $attachment->getContentId(),
             ];
         }
+
         return $attachments;
     }
 
@@ -217,16 +209,11 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $dataPart->getPreparedHeaders()->getHeaderParameter('Content-Disposition', 'filename');
     }
 
-    private function getAttachmentContentType(Datapart $dataPart): string
+    private function getAttachmentContentType(DataPart $dataPart): string
     {
-        return $dataPart->getMediaType() . '/' . $dataPart->getMediaSubtype();
+        return $dataPart->getMediaType().'/'.$dataPart->getMediaSubtype();
     }
 
-    /**
-     * @param Email $email
-     * @param array $data
-     * @return array
-     */
     private function setParameters(Email $email, array $data): array
     {
         $smtp_api = [];
@@ -245,9 +232,11 @@ class SendgridTransport extends AbstractTransport implements Stringable
             switch ($key) {
                 case 'api_key':
                     $this->apiKey = $val;
+
                     continue 2;
                 case 'personalizations':
                     $this->setPersonalizations($data, $val);
+
                     continue 2;
                 case 'attachments':
                     $val = array_merge($this->attachments, $val);
@@ -259,28 +248,24 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $data;
     }
 
-    /**
-     * @param array $data
-     * @param array $personalizations
-     * @return void
-     */
     private function setPersonalizations(array &$data, array $personalizations): void
     {
         foreach ($personalizations as $index => $params) {
             foreach ($params as $key => $val) {
                 if (in_array($key, ['to', 'cc', 'bcc'])) {
-                    Arr::set($data, 'personalizations.' . $index . '.' . $key, $val);
-                    ++$this->numberOfRecipients;
+                    Arr::set($data, 'personalizations.'.$index.'.'.$key, $val);
+                    $this->numberOfRecipients++;
                 } else {
-                    Arr::set($data, 'personalizations.' . $index . '.' . $key, $val);
+                    Arr::set($data, 'personalizations.'.$index.'.'.$key, $val);
                 }
             }
         }
     }
 
     /**
-     * @param array $payload
+     * @param  array  $payload
      * @return ResponseInterface
+     *
      * @throws ClientException
      */
     protected function post($payload)

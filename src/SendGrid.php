@@ -9,20 +9,20 @@ use Symfony\Component\Mime\Email;
 
 trait SendGrid
 {
-
     /**
-     * @param null|array $params
+     * @param  null|array  $params
      * @return $this
      */
     public function sendgrid($params)
     {
         $isValidInstance = $this instanceof Mailable || $this instanceof MailMessage;
 
-        if ($isValidInstance && $this->mailDriver() == "sendgrid") {
+        if ($isValidInstance && $this->mailDriver() == 'sendgrid') {
             $this->withSymfonyMessage(function (Email $email) use ($params) {
                 $email->embed(static::sgEncode($params), SendgridTransport::REQUEST_BODY_PARAMETER);
             });
         }
+
         return $this;
     }
 
@@ -35,7 +35,7 @@ trait SendGrid
     }
 
     /**
-     * @param array $params
+     * @param  array  $params
      * @return string
      */
     public static function sgEncode($params)
@@ -43,20 +43,21 @@ trait SendGrid
         if (is_string($params)) {
             return $params;
         }
+
         return json_encode($params);
     }
 
     /**
-     * @param string $strParams
+     * @param  string  $strParams
      * @return array
      */
     public static function sgDecode($strParams)
     {
-        if (!is_string($strParams)) {
-            return (array)$strParams;
+        if (! is_string($strParams)) {
+            return (array) $strParams;
         }
         $params = json_decode($strParams, true);
+
         return is_array($params) ? $params : [];
     }
-
 }

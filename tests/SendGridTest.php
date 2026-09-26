@@ -1,9 +1,10 @@
 <?php
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 use Sichikawa\LaravelSendgridDriver\SendGrid;
 
-class SendGridTest extends \PHPUnit\Framework\TestCase
+class SendGridTest extends TestCase
 {
     use SendGrid;
 
@@ -17,6 +18,7 @@ class SendGridTest extends \PHPUnit\Framework\TestCase
             ],
         ],
     ];
+
     const STR_PARAMS = '{"personalizations":[{"to":{"email":"foo@sink.sendgrid.net","name":"foo"}}]}';
 
     public static function providerTestSgEncode(): array
@@ -28,7 +30,7 @@ class SendGridTest extends \PHPUnit\Framework\TestCase
     }
 
     #[DataProvider('providerTestSgEncode')]
-    public function testSgEncode($params, string $expected): void
+    public function test_sg_encode($params, string $expected): void
     {
         $result = self::sgEncode($params);
         $this->assertSame($expected, $result);
@@ -43,7 +45,7 @@ class SendGridTest extends \PHPUnit\Framework\TestCase
     }
 
     #[DataProvider('providerTestSgDecode')]
-    public function testSgDecode($str, array $expected): void
+    public function test_sg_decode($str, array $expected): void
     {
         $result = self::sgDecode($str);
         $this->assertSame($expected, $result);

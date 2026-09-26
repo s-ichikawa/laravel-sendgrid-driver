@@ -1,6 +1,6 @@
 <?php
 
-class TestCase extends \PHPUnit\Framework\TestCase
+class TestCase extends PHPUnit\Framework\TestCase
 {
     protected const API_KEY = 'SG.test-api-key';
 
