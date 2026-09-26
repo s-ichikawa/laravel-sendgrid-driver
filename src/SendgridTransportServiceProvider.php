@@ -17,8 +17,8 @@ class SendgridTransportServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->afterResolving(MailManager::class, function (MailManager $mail_manager) {
-            $mail_manager->extend('sendgrid', function ($config) {
+        $this->app->afterResolving(MailManager::class, function (MailManager $mail_manager): void {
+            $mail_manager->extend('sendgrid', function (array $config): SendgridTransport {
                 if (! isset($config['api_key'])) {
                     $config = $this->app['config']->get('services.sendgrid', []);
                 }

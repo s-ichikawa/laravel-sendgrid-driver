@@ -18,7 +18,7 @@ trait SendGrid
         $isValidInstance = $this instanceof Mailable || $this instanceof MailMessage;
 
         if ($isValidInstance && $this->mailDriver() === 'sendgrid') {
-            $this->withSymfonyMessage(function (Email $email) use ($params) {
+            $this->withSymfonyMessage(function (Email $email) use ($params): void {
                 $email->embed(static::sgEncode($params), SendgridTransport::REQUEST_BODY_PARAMETER);
             });
         }

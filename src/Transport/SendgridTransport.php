@@ -148,10 +148,8 @@ class SendgridTransport extends AbstractTransport implements Stringable
      */
     private function getFrom(Email $email): array
     {
-        if (count($email->getFrom()) > 0) {
-            foreach ($email->getFrom() as $from) {
-                return ['email' => $from->getAddress(), 'name' => $from->getName()];
-            }
+        foreach ($email->getFrom() as $from) {
+            return ['email' => $from->getAddress(), 'name' => $from->getName()];
         }
 
         return [];
