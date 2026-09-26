@@ -41,7 +41,7 @@ class SendgridTransportTest extends \TestCase
         $this->reflection = new \ReflectionClass($this->transport);
     }
 
-    public function test_get_personalizations()
+    public function testGetPersonalizations()
     {
         $email = (new Email)
             ->to(
@@ -78,7 +78,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function test_get_from()
+    public function testGetFrom()
     {
         $email = (new Email)
             ->from(
@@ -94,7 +94,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function test_get_content()
+    public function testGetContent()
     {
         $email = (new Email)
             ->text('test body')
@@ -115,7 +115,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function test_x_message_id()
+    public function testXMessageID()
     {
         $messageId = Str::random(32);
         $this->mockHandler->append(new Response(202, ['X-Message-Id' => $messageId]));
@@ -152,7 +152,7 @@ class SendgridTransportTest extends \TestCase
         ], $body['content']);
     }
 
-    public function test_get_reply_to()
+    public function testGetReplyTo()
     {
         $email = (new Email)
             ->replyTo((new Address('from1@sink.sendgrid.net', 'test_from1')));
@@ -166,7 +166,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function test_get_attachments()
+    public function testGetAttachments()
     {
         $file = file_get_contents(__DIR__.'/test.png');
         $email = (new Email)
@@ -197,7 +197,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function test_set_parameters()
+    public function testSetParameters()
     {
         $email = (new Email)
             ->embed(self::sgEncode([
@@ -246,7 +246,7 @@ class SendgridTransportTest extends \TestCase
         ], $result);
     }
 
-    public function test_set_parameters_with_smt_p_ap_i_name()
+    public function testSetParameters_with_SMTP_API_NAME()
     {
         $email = (new Email)
             ->embed(self::sgEncode([

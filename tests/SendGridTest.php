@@ -30,7 +30,7 @@ class SendGridTest extends TestCase
     }
 
     #[DataProvider('providerTestSgEncode')]
-    public function test_sg_encode($params, string $expected): void
+    public function testSgEncode($params, string $expected): void
     {
         $result = self::sgEncode($params);
         $this->assertSame($expected, $result);
@@ -45,7 +45,7 @@ class SendGridTest extends TestCase
     }
 
     #[DataProvider('providerTestSgDecode')]
-    public function test_sg_decode($str, array $expected): void
+    public function testSgDecode($str, array $expected): void
     {
         $result = self::sgDecode($str);
         $this->assertSame($expected, $result);
