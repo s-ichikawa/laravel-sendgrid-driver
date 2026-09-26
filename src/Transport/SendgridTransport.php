@@ -2,17 +2,18 @@
 
 namespace Sichikawa\LaravelSendgridDriver\Transport;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Sichikawa\LaravelSendgridDriver\SendGrid;
 use Stringable;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Message;
 use Symfony\Component\Mime\MessageConverter;
 use Symfony\Component\Mime\Part\DataPart;
 
@@ -34,18 +35,16 @@ class SendgridTransport extends AbstractTransport implements Stringable
 
     const REQUEST_BODY_PARAMETER = 'sendgrid/request-body-parameter';
 
-    /**
-     * @var Client
-     */
-    private $client;
+    private ClientInterface $client;
 
-    private $attachments;
+    /** @var array<int, array<string, mixed>> */
+    private array $attachments;
 
-    private $numberOfRecipients;
+    private int $numberOfRecipients = 0;
 
-    private $apiKey;
+    private string $apiKey;
 
-    private $endpoint;
+    private string $endpoint;
 
     public function __construct(ClientInterface $client, string $api_key, ?string $endpoint = null)
     {
@@ -59,7 +58,12 @@ class SendgridTransport extends AbstractTransport implements Stringable
 
     protected function doSend(SentMessage $message): void
     {
-        $email = MessageConverter::toEmail($message->getOriginalMessage());
+        $original = $message->getOriginalMessage();
+        if (! $original instanceof Message) {
+            throw new TransportException(sprintf('SendGrid transport requires a %s, %s given.', Message::class, get_debug_type($original)));
+        }
+
+        $email = MessageConverter::toEmail($original);
 
         $data = [
             'personalizations' => $this->getPersonalizations($email),
@@ -67,11 +71,13 @@ class SendgridTransport extends AbstractTransport implements Stringable
             'subject' => $email->getSubject(),
         ];
 
-        if ($contents = $this->getContents($email)) {
+        $contents = $this->getContents($email);
+        if ($contents !== []) {
             $data['content'] = $contents;
         }
 
-        if ($reply_to = $this->getReplyTo($email)) {
+        $reply_to = $this->getReplyTo($email);
+        if ($reply_to !== null) {
             $data['reply_to'] = $reply_to;
         }
 
@@ -96,17 +102,15 @@ class SendgridTransport extends AbstractTransport implements Stringable
 
         $message->setMessageId($messageId);
 
-        $message->getOriginalMessage()
-            ->getHeaders()
-            ->addTextHeader('X-Sendgrid-Message-Id', $messageId);
+        $original->getHeaders()->addTextHeader('X-Sendgrid-Message-Id', $messageId);
     }
 
     /**
-     * @return array[]
+     * @return array<int, array<string, array<int, array<string, string>>>>
      */
     private function getPersonalizations(Email $email): array
     {
-        $personalization['to'] = $this->setAddress($email->getTo());
+        $personalization = ['to' => $this->setAddress($email->getTo())];
 
         if (count($email->getCc()) > 0) {
             $personalization['cc'] = $this->setAddress($email->getCc());
@@ -123,6 +127,7 @@ class SendgridTransport extends AbstractTransport implements Stringable
 
     /**
      * @param  Address[]  $addresses
+     * @return array<int, array<string, string>>
      */
     private function setAddress(array $addresses): array
     {
@@ -138,6 +143,9 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $recipients;
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getFrom(Email $email): array
     {
         if (count($email->getFrom()) > 0) {
@@ -149,6 +157,9 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return [];
     }
 
+    /**
+     * @return array<int, array<string, string>>
+     */
     private function getContents(Email $email): array
     {
         $contents = [];
@@ -169,6 +180,9 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $contents;
     }
 
+    /**
+     * @return array<string, string>|null
+     */
     private function getReplyTo(Email $email): ?array
     {
         if (count($email->getReplyTo()) > 0) {
@@ -183,6 +197,9 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return null;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function getAttachments(Email $email): array
     {
         $attachments = [];
@@ -214,6 +231,10 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $dataPart->getMediaType().'/'.$dataPart->getMediaSubtype();
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<mixed>
+     */
     private function setParameters(Email $email, array $data): array
     {
         $smtp_api = [];
@@ -248,11 +269,15 @@ class SendgridTransport extends AbstractTransport implements Stringable
         return $data;
     }
 
+    /**
+     * @param  array<mixed>  $data
+     * @param  array<int, array<string, mixed>>  $personalizations
+     */
     private function setPersonalizations(array &$data, array $personalizations): void
     {
         foreach ($personalizations as $index => $params) {
             foreach ($params as $key => $val) {
-                if (in_array($key, ['to', 'cc', 'bcc'])) {
+                if (in_array($key, ['to', 'cc', 'bcc'], true)) {
                     Arr::set($data, 'personalizations.'.$index.'.'.$key, $val);
                     $this->numberOfRecipients++;
                 } else {
@@ -263,12 +288,11 @@ class SendgridTransport extends AbstractTransport implements Stringable
     }
 
     /**
-     * @param  array  $payload
-     * @return ResponseInterface
+     * @param  array<string, mixed>  $payload
      *
      * @throws ClientException
      */
-    protected function post($payload)
+    protected function post(array $payload): ResponseInterface
     {
         return $this->client->request('POST', $this->endpoint, $payload);
     }
