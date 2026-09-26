@@ -1,8 +1,10 @@
 Laravel SendGrid Driver
 ====
 
-[![SymfonyInsight](https://insight.symfony.com/projects/8955bc55-16f6-4ac9-8203-1cdce3d209a8/mini.svg)](https://insight.symfony.com/projects/8955bc55-16f6-4ac9-8203-1cdce3d209a8)
-[![Build Status](https://scrutinizer-ci.com/g/s-ichikawa/laravel-sendgrid-driver/badges/build.png?b=master)](https://scrutinizer-ci.com/g/s-ichikawa/laravel-sendgrid-driver/build-status/master)
+[![Tests](https://github.com/s-ichikawa/laravel-sendgrid-driver/actions/workflows/tests.yml/badge.svg)](https://github.com/s-ichikawa/laravel-sendgrid-driver/actions/workflows/tests.yml)
+[![Latest Stable Version](https://img.shields.io/packagist/v/s-ichikawa/laravel-sendgrid-driver)](https://packagist.org/packages/s-ichikawa/laravel-sendgrid-driver)
+[![Total Downloads](https://img.shields.io/packagist/dt/s-ichikawa/laravel-sendgrid-driver)](https://packagist.org/packages/s-ichikawa/laravel-sendgrid-driver)
+[![License](https://img.shields.io/packagist/l/s-ichikawa/laravel-sendgrid-driver)](LICENSE.txt)
 
 A Mail Driver with support for Sendgrid Web API, using the original Laravel API.
 This library extends the original Laravel classes, so it uses exactly the same methods.
@@ -15,7 +17,7 @@ Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
 | Laravel   | laravel-sendgrid-driver |
 |-----------| ---- |
-| 9, 10, 11 | ^4.0 |
+| 9, 10, 11, 12, 13 | ^4.0 |
 | 7, 8      | ^3.0 |
 | 5, 6      | ^2.0 |
 
