@@ -3,6 +3,10 @@
 namespace Transport;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Str;
 use Sichikawa\LaravelSendgridDriver\SendGrid;
 use Sichikawa\LaravelSendgridDriver\Transport\SendgridTransport;
@@ -17,11 +21,17 @@ class SendgridTransportTest extends \TestCase
 
     protected SendgridTransport $transport;
     private \ReflectionClass $reflection;
+    private MockHandler $mockHandler;
+    /** @var array<int, array{request: \Psr\Http\Message\RequestInterface, response: ?\Psr\Http\Message\ResponseInterface}> */
+    private array $history = [];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $client = new Client();
+        $this->mockHandler = new MockHandler();
+        $stack = HandlerStack::create($this->mockHandler);
+        $stack->push(Middleware::history($this->history));
+        $client = new Client(['handler' => $stack]);
         $this->transport = new SendgridTransport($client, $this->api_key);
         $this->reflection = new \ReflectionClass($this->transport);
     }
@@ -43,7 +53,6 @@ class SendgridTransportTest extends \TestCase
             );
 
         $method = $this->reflection->getMethod('getPersonalizations');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->transport, $email);
         self::assertEquals([
@@ -72,7 +81,6 @@ class SendgridTransportTest extends \TestCase
             );
 
         $method = $this->reflection->getMethod('getFrom');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->transport, $email);
         self::assertEquals([
@@ -88,7 +96,6 @@ class SendgridTransportTest extends \TestCase
             ->html('<body>test body</body>');
 
         $method = $this->reflection->getMethod('getContents');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->transport, $email);
         self::assertEquals([
@@ -105,20 +112,11 @@ class SendgridTransportTest extends \TestCase
 
     public function testXMessageID()
     {
-        $client = $this->getMockBuilder(\GuzzleHttp\Client::class)
-            ->onlyMethods(['request'])
-            ->getMock();
-
-        $client->expects($this->once())
-            ->method('request')
-            ->willReturn(new \GuzzleHttp\Psr7\Response(200, [
-                'X-Message-ID' => $messageId = Str::random(32),
-            ]));
-
-        $transport = new SendgridTransport($client, $this->api_key);
-        $reflection = new \ReflectionClass($this->transport);
+        $messageId = Str::random(32);
+        $this->mockHandler->append(new Response(202, ['X-Message-Id' => $messageId]));
 
         $email = (new Email())
+            ->subject('test subject')
             ->text('test body')
             ->html('<body>test body</body>')
             ->to(new Address('to@sink.sendgrid.net', 'test_to'))
@@ -126,14 +124,27 @@ class SendgridTransportTest extends \TestCase
 
         $send = new SentMessage($email, Envelope::create($email));
 
-        $method = $reflection->getMethod('doSend');
-        $method->setAccessible(true);
+        $method = $this->reflection->getMethod('doSend');
+        $method->invoke($this->transport, $send);
 
-        $method->invoke($transport, $send);
+        self::assertSame($messageId, $send->getMessageId());
+        self::assertSame($messageId, $email->getHeaders()->get('X-Sendgrid-Message-Id')->getBodyAsString());
 
-        $this->assertEquals($messageId, $send->getMessageId());
+        self::assertCount(1, $this->history);
+        $request = $this->history[0]['request'];
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame(SendgridTransport::BASE_URL, (string) $request->getUri());
+        self::assertSame('Bearer ' . self::API_KEY, $request->getHeaderLine('Authorization'));
+        self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
 
-        $this->assertEquals($messageId, $email->getHeaders()->getHeaderBody('X-Sendgrid-Message-ID'));
+        $body = json_decode((string) $request->getBody(), true);
+        self::assertSame('test subject', $body['subject']);
+        self::assertSame(['email' => 'from@sink.sendgrid.net', 'name' => 'test_from'], $body['from']);
+        self::assertSame([['email' => 'to@sink.sendgrid.net', 'name' => 'test_to']], $body['personalizations'][0]['to']);
+        self::assertSame([
+            ['type' => 'text/plain', 'value' => 'test body'],
+            ['type' => 'text/html', 'value' => '<body>test body</body>'],
+        ], $body['content']);
     }
 
     public function testGetReplyTo()
@@ -142,7 +153,6 @@ class SendgridTransportTest extends \TestCase
             ->replyTo((new Address('from1@sink.sendgrid.net', 'test_from1')));
 
         $method = $this->reflection->getMethod('getReplyTo');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->transport, $email);
         self::assertEquals([
@@ -169,7 +179,6 @@ class SendgridTransportTest extends \TestCase
             ]), SendgridTransport::REQUEST_BODY_PARAMETER);
 
         $method = $this->reflection->getMethod('getAttachments');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->transport, $email);
         unset($result[0]['content_id']);
@@ -178,7 +187,7 @@ class SendgridTransportTest extends \TestCase
                 'content' => base64_encode($file),
                 'filename' => 'test.png',
                 'type' => 'image/png',
-                'disposition' => null,
+                'disposition' => 'attachment',
             ]
         ], $result);
     }
@@ -207,7 +216,6 @@ class SendgridTransportTest extends \TestCase
             ]), SendgridTransport::REQUEST_BODY_PARAMETER);
 
         $method = $this->reflection->getMethod('setParameters');
-        $method->setAccessible(true);
 
         $data = [];
         $result = $method->invoke($this->transport, $email, $data);
@@ -257,7 +265,6 @@ class SendgridTransportTest extends \TestCase
             ]), SendgridTransport::SMTP_API_NAME);
 
         $method = $this->reflection->getMethod('setParameters');
-        $method->setAccessible(true);
 
         $data = [];
         $result = $method->invoke($this->transport, $email, $data);
