@@ -15,11 +15,19 @@ Please make it [Here](https://app.sendgrid.com/settings/api_keys).
 
 ### Compatibility
 
-| Laravel   | laravel-sendgrid-driver |
-|-----------| ---- |
-| 9, 10, 11, 12, 13 | ^4.0 |
-| 7, 8      | ^3.0 |
-| 5, 6      | ^2.0 |
+| Laravel | PHP   | laravel-sendgrid-driver | Status |
+|---------|-------|-------------------------|--------|
+| 12, 13  | 8.3+  | ^5.0 (in development on `master`) | Active development |
+| 9 - 13  | 8.0+  | ^4.0 (`4.x` branch)     | Security fixes only, until September 2027 |
+| 7, 8    |       | ^3.0                    | End of life |
+| 5, 6    |       | ^2.0                    | End of life |
+
+### Support policy
+
+- **5.x** is the actively developed line. It requires PHP 8.3+ and Laravel 12+.
+- **4.x** keeps working on every Laravel version it supports today (9 - 13), but only receives security fixes.
+  It is maintained on the [`4.x`](https://github.com/s-ichikawa/laravel-sendgrid-driver/tree/4.x) branch until **September 2027**.
+  If you cannot upgrade to PHP 8.3 / Laravel 12 yet, stay on `^4.0`; otherwise plan to move to `^5.0` within that window.
 
 # Install (for [Laravel](https://laravel.com/))
 
